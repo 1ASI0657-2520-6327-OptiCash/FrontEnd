@@ -12,7 +12,7 @@
   "ABOUT": {
     "TAGLINE": "Nuestra Misión",
     "TITLE": "Creado para una convivencia más justa y transparente.",
-    "DESCRIPTION": "SplitEasy nació para eliminar el estrés y las discusiones sobre dinero en casa. Nuestra meta es ofrecer una herramienta simple y poderosa que promueva la equidad financiera, sin importar las diferencias de ingresos, para que puedas enfocarte en lo que de verdad importa: disfrutar con la gente que quieres.",
+    "DESCRIPTION": "OptiCash nació para eliminar el estrés y las discusiones sobre dinero en casa. Nuestra meta es ofrecer una herramienta simple y poderosa que promueva la equidad financiera, sin importar las diferencias de ingresos, para que puedas enfocarte en lo que de verdad importa: disfrutar con la gente que quieres.",
     "BENEFIT_1_TITLE": "Reparto Proporcional",
     "BENEFIT_1_TEXT": "Distribuye los gastos según el ingreso de cada persona.",
     "BENEFIT_2_TITLE": "Transparencia Total",
@@ -22,12 +22,12 @@
   },
   "HERO": {
     "TITLE": "La forma fácil y justa de dividir los gastos en casa.",
-    "DESCRIPTION": "Olvídate de las hojas de cálculo y las discusiones. SplitEasy calcula quién debe qué para que la convivencia sea siempre transparente.",
+    "DESCRIPTION": "Olvídate de las hojas de cálculo y las discusiones. OptiCash calcula quién debe qué para que la convivencia sea siempre transparente.",
     "REGISTER_BUTTON": "Empieza Gratis",
     "HOW_IT_WORKS": "Ver cómo funciona"
   },
   "HOW_IT_WORKS": {
-    "TITLE": "¿Cómo funciona SplitEasy?",
+    "TITLE": "¿Cómo funciona OptiCash?",
     "LEAD_TEXT": "Tenemos un camino para cada tipo de usuario. Elige tu rol y descubre lo fácil que es empezar.",
     "TABS": {
       "REP": "Soy Representante del Hogar",
@@ -67,7 +67,7 @@
   },
   "PRICES": {
     "TITLE": "Un Plan Para Cada Necesidad",
-    "LEAD_TEXT": "Empieza gratis o elige Premium para desbloquear todo el potencial de SplitEasy.",
+    "LEAD_TEXT": "Empieza gratis o elige Premium para desbloquear todo el potencial de OptiCash.",
     "MONTHLY": "Mensual",
     "YEARLY": "Anual",
     "YEARLY_SAVE": "Ahorra 2 meses",
@@ -108,7 +108,7 @@
       {
         "NAME": "María López",
         "ROLE": "Diseñadora Gráfica",
-        "TEXT": "SplitEasy me ha ayudado muchísimo para dividir gastos con mis compañeras de cuarto. ¡Todo es claro y ya no hay discusiones!",
+        "TEXT": "OptiCash me ha ayudado muchísimo para dividir gastos con mis compañeras de cuarto. ¡Todo es claro y ya no hay discusiones!",
         "IMAGE_URL": "assets/images/random1.png",
         "RATING": 5
       },
@@ -122,7 +122,7 @@
       {
         "NAME": "José Ramírez",
         "ROLE": "Padre de Familia",
-        "TEXT": "Gracias a SplitEasy puedo ver cuánto aporta cada miembro de mi familia. Es justo, transparente y muy fácil de usar.",
+        "TEXT": "Gracias a OptiCash puedo ver cuánto aporta cada miembro de mi familia. Es justo, transparente y muy fácil de usar.",
         "IMAGE_URL": "assets/images/random3.png",
         "RATING": 4
       }
@@ -193,7 +193,7 @@
   "REGISTER": {
     "TITLE": "Crear tu cuenta",
     "BRANDING": {
-      "TITLE": "Bienvenido a SplitEasy",
+      "TITLE": "Bienvenido a OptiCash",
       "SUBTITLE": "Regístrate para dividir fácilmente los gastos del hogar."
     },
     "USERNAME_LABEL": "Nombre de usuario",

@@ -31,10 +31,10 @@
   font-size: 1.5rem;
 }
 .brand-text .text-split {
-  color: var(--brand-primary);
+  color: #063162;
 }
 .brand-text .text-easy {
-  color: var(--brand-secondary);
+  color :#1565c0;
 }
 
 .nav-item {
