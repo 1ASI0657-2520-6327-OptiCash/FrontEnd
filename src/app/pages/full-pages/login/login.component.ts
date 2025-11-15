@@ -1,9 +1,8 @@
-import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { SidebarService } from '../../../core/services/sidebar.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { SignInRequest, User } from '../../../core/interfaces/auth';
+import { SignInRequest } from '../../../core/interfaces/auth';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +17,7 @@ export class LoginComponent {
 
   constructor(
     private authService: AuthService,
-    private sidebarService: SidebarService, // ✅ inyectar el servicio aquí
+    private sidebarService: SidebarService,
     private router: Router
   ) {}
 
@@ -30,36 +29,26 @@ export class LoginComponent {
 
     this.authService.signIn(payload).subscribe({
       next: () => {
-        const userId = localStorage.getItem('userId');
-        if (!userId) {
-          this.error = 'ID de usuario no encontrado.';
+        // 🔹 Token y usuario ya están en localStorage gracias a AuthService
+        const currentUser = JSON.parse(localStorage.getItem('currentUser')!);
+        const userRole = localStorage.getItem('userRole') || '';
+
+        if (!currentUser) {
+          this.error = 'Error: no se pudo obtener la información del usuario.';
           return;
         }
 
-        this.authService.getUserById(Number(userId)).subscribe({
-          next: (user: User) => {
-            console.log('Usuario obtenido:', user);
+        // 🔹 Generar menú del sidebar
+        this.sidebarService.generateMenu();
 
-            // ✅ Guardar en localStorage para el sidebar
-            localStorage.setItem('currentUser', JSON.stringify(user));
-
-            // ✅ Generar menú basado en el rol
-            this.sidebarService.generateMenu();
-
-            const userRole = user.roles[0];
-            if (userRole === 'ROLE_REPRESENTANTE') {
-              this.router.navigate(['/representante']);
-            } else if (userRole === 'ROLE_MIEMBRO') {
-              this.router.navigate(['/miembro']);
-            } else {
-              this.router.navigate(['/']);
-            }
-          },
-          error: (err) => {
-            this.error = 'No se pudo obtener información del usuario.';
-            console.error(err);
-          }
-        });
+        // 🔹 Navegar según rol
+        if (userRole === 'ROLE_REPRESENTANTE') {
+          this.router.navigate(['/representante']);
+        } else if (userRole === 'ROLE_MIEMBRO') {
+          this.router.navigate(['/miembro']);
+        } else {
+          this.router.navigate(['/']);
+        }
       },
       error: (err) => {
         this.error = 'Credenciales inválidas.';

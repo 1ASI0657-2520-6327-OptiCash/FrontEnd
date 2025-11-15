@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
@@ -11,6 +11,10 @@ import { DropdownModule } from 'primeng/dropdown';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
+import { environment } from '../../../../../../src/app/core/environments/environment';
+import { AuthService } from '../../../../../../src/app/core/services/auth.service';
+import { UserSettings } from '../../../../../../src/app/core/interfaces/user-settings';
+import { User } from '../../../../../../src/app/core/interfaces/auth';
 
 @Component({
   selector: 'app-settings',
@@ -30,27 +34,32 @@ import { PasswordModule } from 'primeng/password';
   styleUrls: ['./settings.component.css']
 })
 export class SettingsComponent implements OnInit, OnDestroy {
+
   profileForm!: FormGroup;
   passwordForm!: FormGroup;
   settingsForm!: FormGroup;
-  userId!: any;
-  settingId!: any;
+  userId!: number;
+  settingId: number | null = null;
+
   private destroy$ = new Subject<void>();
 
-  constructor(private http: HttpClient, private fb: FormBuilder) {}
+  constructor(
+    private http: HttpClient,
+    private fb: FormBuilder,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.profileForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
     });
+
     this.passwordForm = this.fb.group({
       currentPassword: ['', Validators.required],
       newPassword: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', Validators.required]
-    }, {
-      validator: this.passwordMatchValidator
-    });
+    }, { validators: this.passwordMatchValidator });
 
     this.settingsForm = this.fb.group({
       language: ['es'],
@@ -58,32 +67,48 @@ export class SettingsComponent implements OnInit, OnDestroy {
       notifications_enabled: [true]
     });
 
-    const user = JSON.parse(localStorage.getItem('currentUser')!);
-    if (user && user.id) {
-      this.userId = user.id;
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser && currentUser.id) {
+      this.userId = currentUser.id;
       this.loadUserData();
       this.loadSettingsData();
     } else {
-      console.error("No se pudo encontrar el usuario o su ID en localStorage.");
+      console.error('No se encontró usuario en localStorage.');
     }
   }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   passwordMatchValidator(form: AbstractControl): ValidationErrors | null {
     const newPassword = form.get('newPassword')?.value;
     const confirmPassword = form.get('confirmPassword')?.value;
     return newPassword === confirmPassword ? null : { mismatch: true };
   }
+
+  private getAuthHeaders(): { headers: HttpHeaders } {
+    const token = localStorage.getItem('accessToken') || '';
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    return { headers };
+  }
+
   loadUserData(): void {
-    this.http.get<any>(`https://backend-vbxt.onrender.com/api/v1/users/${this.userId}`)
+    this.http.get<User>(`${environment.urlBackendIAM}/users/${this.userId}`, this.getAuthHeaders())
       .pipe(takeUntil(this.destroy$))
-      .subscribe(userData => this.profileForm.patchValue(userData));
+      .subscribe({
+        next: userData => this.profileForm.patchValue(userData),
+        error: err => console.error('Error cargando usuario:', err)
+      });
   }
 
   loadSettingsData(): void {
-    this.http.get<any[]>(`https://backend-vbxt.onrender.com/api/v1/settings?user_id=${this.userId}`)
+    this.http.get<UserSettings[]>(`${environment.urlBackendHouseholds}/settings?user_id=${this.userId}`, this.getAuthHeaders())
       .pipe(takeUntil(this.destroy$))
       .subscribe(settings => {
-        const existingSetting = settings[0];
-        if (existingSetting) {
+        if (settings.length > 0) {
+          const existingSetting = settings[0];
           this.settingId = existingSetting.id;
           this.settingsForm.patchValue(existingSetting);
         }
@@ -92,53 +117,45 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   saveProfile(): void {
     if (this.profileForm.invalid) return;
-    this.http.patch(`https://backend-vbxt.onrender.com/api/v1/users/${this.userId}`, this.profileForm.value)
+    this.http.patch(`${environment.urlBackendIAM}/users/${this.userId}`, this.profileForm.value, this.getAuthHeaders())
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => alert('Perfil actualizado con éxito'));
   }
 
   saveSettings(): void {
     if (this.settingsForm.invalid) return;
-    const settingsPayload = { ...this.settingsForm.value, user_id: this.userId };
+    const payload = { ...this.settingsForm.value, user_id: this.userId };
     const request = this.settingId
-      ? this.http.patch(`https://backend-vbxt.onrender.com/api/v1/settings/${this.settingId}`, settingsPayload)
-      : this.http.post(`https://backend-vbxt.onrender.com/api/v1/settings`, settingsPayload);
+      ? this.http.patch(`${environment.urlBackendHouseholds}/settings/${this.settingId}`, payload, this.getAuthHeaders())
+      : this.http.post(`${environment.urlBackendHouseholds}/settings`, payload, this.getAuthHeaders());
+
     request.pipe(takeUntil(this.destroy$)).subscribe(() => alert('Configuración guardada'));
   }
 
   changePassword(): void {
-    if (this.passwordForm.invalid) {
-      return;
-    }
+    if (this.passwordForm.invalid) return;
     const { currentPassword, newPassword } = this.passwordForm.value;
-    this.http.get<any>(`https://backend-vbxt.onrender.com/api/v1/users/${this.userId}`)
-      .subscribe(user => {
-        if (user && user.password === currentPassword) {
-          this.http.patch(`https://backend-vbxt.onrender.com/api/v1/users/${this.userId}`, { password: newPassword })
-            .subscribe(() => {
-              alert('Contraseña actualizada con éxito');
-              this.passwordForm.reset();
-            });
 
-        } else {
-          alert('Error: La contraseña actual es incorrecta.');
-        }
+    // 🔹 Backend debe validar password; frontend solo envía
+    this.http.patch(`${environment.urlBackendIAM}/users/${this.userId}/password`, { currentPassword, newPassword }, this.getAuthHeaders())
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          alert('Contraseña actualizada con éxito');
+          this.passwordForm.reset();
+        },
+        error: () => alert('Error: la contraseña actual es incorrecta.')
       });
   }
 
   deleteAccount(): void {
-    const confirmation = prompt('Esta acción es irreversible. Para confirmar, escribe tu correo electrónico:');
+    const confirmation = prompt('Esta acción es irreversible. Escribe tu correo para confirmar:');
     if (confirmation && confirmation.toLowerCase() === this.profileForm.value.email.toLowerCase()) {
-      this.http.delete(`https://backend-vbxt.onrender.com/api/v1/users/${this.userId}`)
+      this.http.delete(`${environment.urlBackendIAM}/users/${this.userId}`, this.getAuthHeaders())
         .pipe(takeUntil(this.destroy$))
         .subscribe(() => alert('Cuenta eliminada.'));
     } else {
-      alert('La confirmación ha fallado. La cuenta no ha sido eliminada.');
+      alert('Confirmación incorrecta, la cuenta no fue eliminada.');
     }
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }

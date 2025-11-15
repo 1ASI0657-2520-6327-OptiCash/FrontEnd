@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  HttpEvent,
-  HttpHandler,
-  HttpInterceptor,
-  HttpRequest
-} from '@angular/common/http';
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable()
@@ -17,13 +12,9 @@ export class AuthInterceptor implements HttpInterceptor {
       '/api/v1/authentication/sign-in'
     ];
 
-    // ✅ EXTRAER SOLO EL PATH de la URL completa
+    // Extraer solo el path
     const path = new URL(req.url).pathname;
     const isPublicRoute = publicRoutes.includes(path);
-
-    console.log('🌐 Interceptando:', path);
-    console.log('🔐 Es ruta pública:', isPublicRoute);
-    console.log('🎫 Token disponible:', !!token);
 
     if (!isPublicRoute && token) {
       const authReq = req.clone({
@@ -31,11 +22,9 @@ export class AuthInterceptor implements HttpInterceptor {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log('✅ Token agregado a la petición');
       return next.handle(authReq);
     }
 
-    console.log('🚫 Petición enviada sin token');
     return next.handle(req);
   }
 }

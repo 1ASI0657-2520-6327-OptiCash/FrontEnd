@@ -15,6 +15,7 @@ import {TranslatePipe} from '@ngx-translate/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { LanguageSwitcherComponent } from '../../core/components/language-switcher/language-switcher.component';
 
+
 @NgModule({
   declarations: [
     ForgotPasswordComponent,
