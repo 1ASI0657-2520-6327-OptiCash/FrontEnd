@@ -1,11 +1,11 @@
-<div class="dashboard-container">
+<div class="dashboard-container" *ngIf="household">
   <div class="main-card">
     <div class="card-header">
       <h1 class="card-title">{{ 'SUMMARY.TITLE' | translate }}</h1>
       <span class="card-subtitle">{{ 'SUMMARY.SUBTITLE' | translate }}</span>
     </div>
 
-    <div class="household-info" *ngIf="household">
+    <div class="household-info">
       <h2 class="household-name">
         <i class="pi pi-home"></i>
         <span>{{ household.name }}</span>

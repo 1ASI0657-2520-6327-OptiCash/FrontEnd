@@ -8,8 +8,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class BillsService {
-
-  private billsUrl = `${environment.urlBackend}/bills`;
+  
+private billsUrl = `${environment.urlGateway}/api/v1/bills`;
 
   constructor(private http: HttpClient) { }
 
@@ -21,11 +21,11 @@ export class BillsService {
     });
   }
 
-  // Crear una nueva bill (solo ROLE_REPRESENTANTE)
-  createBill(billData: CreateBillRequest): Observable<BillResponse> {
-    const headers = this.getHeaders();
-    return this.http.post<BillResponse>(`${this.billsUrl}`, billData, { headers });
-  }
+ createBill(billData: CreateBillRequest): Observable<BillResponse> {
+  const headers = this.getHeaders();
+  return this.http.post<BillResponse>(this.billsUrl, billData, { headers });
+}
+
 
   // Obtener todas las bills
   getAllBills(): Observable<BillResponse[]> {

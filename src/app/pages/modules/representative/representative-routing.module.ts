@@ -5,9 +5,11 @@ import { SettingsComponent } from './settings/settings.component';
 import { MembersComponent } from './members/members.component';
 import { BillsComponent } from './bills/bills.component';
 import { HomeComponent } from './home/home.component';
+import { AgregarHogarComponent } from './add/add.component';
 
 const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
+  {path: 'add', component: AgregarHogarComponent},
   {path: 'home', component: HomeComponent},
   {path: 'members', component: MembersComponent},
   {path: 'bills', component: BillsComponent},

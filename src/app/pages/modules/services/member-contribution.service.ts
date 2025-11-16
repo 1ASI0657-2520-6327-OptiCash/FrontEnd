@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../core/environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { MemberContribution } from '../interfaces/member-contribution';
+import { MemberContributionResource } from '../interfaces/member-contribution';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -21,29 +21,29 @@ export class MemberContributionService {
   }
 
   // ✅ Obtener todas las contribuciones
-  getAll(): Observable<MemberContribution[]> {
+  getAll(): Observable<MemberContributionResource[]> {
     const headers = this.getHeaders();
-    return this.http.get<MemberContribution[]>(this.memberContributionUrl, { headers });
+    return this.http.get<MemberContributionResource[]>(this.memberContributionUrl, { headers });
   }
 
   // ✅ Obtener por ID compuesto (contributionId + memberId)
-  getByIds(contributionId: number, memberId: number): Observable<MemberContribution> {
+  getByIds(contributionId: number, memberId: number): Observable<MemberContributionResource> {
     const headers = this.getHeaders();
     const url = `${this.memberContributionUrl}?contributionId=${contributionId}&memberId=${memberId}`;
-    return this.http.get<MemberContribution>(url, { headers });
+    return this.http.get<MemberContributionResource>(url, { headers });
   }
 
   // ✅ Crear nueva contribución
-  create(contribution: MemberContribution): Observable<MemberContribution> {
+  create(contribution: MemberContributionResource): Observable<MemberContributionResource> {
     const headers = this.getHeaders();
-    return this.http.post<MemberContribution>(this.memberContributionUrl, contribution, { headers });
+    return this.http.post<MemberContributionResource>(this.memberContributionUrl, contribution, { headers });
   }
 
   // ✅ Actualizar contribución (usando ID compuesto)
-  update(contribution: MemberContribution): Observable<MemberContribution> {
+  update(contribution: MemberContributionResource): Observable<MemberContributionResource> {
     const headers = this.getHeaders();
     const url = `${this.memberContributionUrl}/${contribution.contributionId}/${contribution.memberId}`;
-    return this.http.put<MemberContribution>(url, contribution, { headers });
+    return this.http.put<MemberContributionResource>(url, contribution, { headers });
   }
 
   // ✅ Eliminar contribución (usando ID compuesto)

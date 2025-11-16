@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ContributionsService {
-  private contributionsUrl = `${environment.urlBackend}/contributions`;
+private contributionsUrl = `${environment.urlGateway}/api/v1/contributions`;
 
   constructor(private http: HttpClient) {}
 

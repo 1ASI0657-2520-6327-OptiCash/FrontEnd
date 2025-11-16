@@ -30,6 +30,7 @@ export class SidebarService {
         if (role === 'ROLE_REPRESENTANTE') {
           items = [
             { label: 'Home', icon: 'pi pi-home', route: `${baseRoute}/home` },
+            { label: 'Agregar Hogar', icon: 'pi pi-plus-circle', route: `${baseRoute}/add` },
             { label: 'Miembros', icon: 'pi pi-users', route: `${baseRoute}/members` },
             { label: 'Cuentas', icon: 'pi pi-file', route: `${baseRoute}/bills` },
             { label: 'Contribuciones', icon: 'pi pi-dollar', route: `${baseRoute}/contributions` },

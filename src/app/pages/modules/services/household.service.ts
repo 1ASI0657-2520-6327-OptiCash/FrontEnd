@@ -1,44 +1,49 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../../core/environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Household } from '../interfaces/household';
+import { environment } from '../../../core/environments/environment';
+import { HouseholdResponse } from '../../../../app/pages/modules/interfaces/householdresponse';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HouseholdService {
 
-  private householdUrl = `${environment.urlBackend}/households`;
+  private gatewayUrl = 'http://localhost:8080/api/v1';
 
   constructor(private http: HttpClient) {}
+private getAuthHeaders(): HttpHeaders {
+  const token = localStorage.getItem('accessToken');
+  if (!token) throw new Error('No se encontró JWT del usuario activo');
+  return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+}
 
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('accessToken');
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-  }
 
-  // Obtener todos los households y filtrar por representante en el frontend
-  getHouseholdByRepresentante(representanteId: number): Observable<Household[]> {
+  createHousehold(household: Household): Observable<HouseholdResponse> {
     const headers = this.getAuthHeaders();
-    return this.http.get<Household[]>(this.householdUrl, { headers })
-      .pipe(
-        map(households => households.filter(household => household.representanteId === representanteId))
-      );
+    return this.http.post<HouseholdResponse>(`${this.gatewayUrl}/households`, household, { headers });
   }
 
-  // Obtener household por ID (este ya funciona)
-  getHouseholdById(id: number): Observable<Household> {
+  addHouseholdMember(member: { householdId: number; userId: number }): Observable<any> {
     const headers = this.getAuthHeaders();
-    const url = `${this.householdUrl}/${id}`;
-    return this.http.get<Household>(url, { headers });
+    return this.http.post(`${this.gatewayUrl}/household-members`, member, { headers });
   }
+  
+getHouseholdById(id: number): Observable<Household> {
+  const headers = this.getAuthHeaders();
+  return this.http.get<Household>(`${this.gatewayUrl}/households/${id}`, { headers });
+}
+getHouseholdsByUserId(userId: number): Observable<HouseholdResponse[]> {
+  const headers = this.getAuthHeaders();
+  return this.http.get<HouseholdResponse[]>(`${this.gatewayUrl}/households?representanteId=${userId}`, { headers });
+}
 
-  // Método adicional para obtener todos los households
-  getAllHouseholds(): Observable<Household[]> {
-    const headers = this.getAuthHeaders();
-    return this.http.get<Household[]>(this.householdUrl, { headers });
-  }
+
+getAllHouseholds(): Observable<Household[]> {
+  const headers = this.getAuthHeaders();
+  return this.http.get<Household[]>(`${this.gatewayUrl}/households`, { headers });
+}
+
+
 }

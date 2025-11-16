@@ -16,7 +16,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CoreModule } from '../../core/core.module';
 import { AppRoutingModule } from '../../app-routing.module';
 
-
+import { AgregarHogarComponent } from '../../pages/modules/representative/add/add.component';
 @NgModule({
   declarations: [HomeComponent,
     AboutSectionComponent,
@@ -24,6 +24,7 @@ import { AppRoutingModule } from '../../app-routing.module';
     HowdoesitworkSectionComponent,
     PriceSectionComponent,
     ReviewSectionComponent,
+    AgregarHogarComponent,
     ServiceSectionComponent
   ],
   imports: [

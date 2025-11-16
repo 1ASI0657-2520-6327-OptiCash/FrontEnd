@@ -34,51 +34,62 @@
     <div *ngIf="!loading && members.length > 0" class="table-wrapper">
       <table class="members-table">
         <thead>
-        <tr>
-          <th>{{ 'HOUSEHOLD.MEMBERS.NAME' | translate }}</th>
-          <th class="text-right">{{ 'HOUSEHOLD.MEMBERS.INCOME' | translate }}</th>
-          <th class="text-center">{{ 'HOUSEHOLD.MEMBERS.ACTIONS' | translate }}</th>
-        </tr>
+          <tr>
+            <th>{{ 'HOUSEHOLD.MEMBERS.NAME' | translate }}</th>
+            <th class="text-right">{{ 'HOUSEHOLD.MEMBERS.INCOME' | translate }}</th>
+            <th class="text-center">{{ 'HOUSEHOLD.MEMBERS.ACTIONS' | translate }}</th>
+          </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let member of members">
-          <td>
-            <div class="user-cell">
-              <p-avatar [label]="member.username" shape="circle"></p-avatar>
-              <div class="user-info">
-                <span class="user-name">{{ member.username }}</span>
-                <br>
-                <span class="user-email">{{ member.email }}</span>
+          <tr *ngFor="let member of members">
+            <td>
+              <div class="user-cell">
+                <p-avatar [label]="member.username" shape="circle"></p-avatar>
+                <div class="user-info">
+                  <span class="user-name">{{ member.username }}</span>
+                  <br>
+                  <span class="user-email">{{ member.email }}</span>
+                </div>
               </div>
-            </div>
-          </td>
-          <td class="text-right">
-            <span class="income-value">S/. {{ member.income | number:'1.2-2' }}</span>
-          </td>
-          <td class="text-center">
-            <div class="actions-cell">
-              <button class="btn-icon btn-icon-danger" pTooltip="Eliminar Miembro" tooltipPosition="top" (click)="deleteMember(member)">
-                <i class="pi pi-trash"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
+            </td>
+            <td class="text-right">
+              <span class="income-value">S/. {{ member.income | number:'1.2-2' }}</span>
+            </td>
+            <td class="text-center">
+              <div class="actions-cell">
+                <button class="btn-icon btn-icon-danger" pTooltip="Eliminar Miembro" tooltipPosition="top" (click)="deleteMember(member)">
+                  <i class="pi pi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
   </div>
 </div>
 
+<!-- FORMULARIO SIMPLIFICADO -->
 <p-dialog header="Añadir Nuevo Miembro" [(visible)]="showAddMemberForm" [modal]="true" [style]="{width: '450px'}" [draggable]="false">
   <form [formGroup]="addMemberForm" (ngSubmit)="addMember()">
-    <p class="mb-3">Ingresa el correo electrónico del usuario que deseas añadir al hogar. El usuario ya debe estar registrado en la plataforma.</p>
+    <p class="mb-3">Ingresa el ID del hogar y el email del usuario que deseas añadir.</p>
+
     <div class="field">
-      <label for="email">Email del usuario</label>
-      <input id="email" type="email" pInputText formControlName="email" class="w-full" placeholder="ejemplo@correo.com" />
-      <small *ngIf="addMemberForm.get('email')?.invalid && addMemberForm.get('email')?.touched" class="p-error">
-        Por favor, ingresa un email válido.
+      <label for="householdId">ID del hogar</label>
+      <input id="householdId" type="number" pInputText formControlName="householdId" placeholder="Ej: 8" />
+      <small *ngIf="addMemberForm.get('householdId')?.invalid && addMemberForm.get('householdId')?.touched" class="p-error">
+        Debes ingresar un ID válido.
       </small>
     </div>
+
+    <div class="field">
+      <label for="email">Email del usuario</label>
+      <input id="email" type="email" pInputText formControlName="email" placeholder="ejemplo@correo.com" />
+      <small *ngIf="addMemberForm.get('email')?.invalid && addMemberForm.get('email')?.touched" class="p-error">
+        Debes ingresar un email válido.
+      </small>
+    </div>
+
     <div class="form-actions">
       <button type="button" class="btn-secondary" (click)="showAddMemberForm=false">Cancelar</button>
       <button type="submit" class="btn-primary" [disabled]="addMemberForm.invalid || isSaving">

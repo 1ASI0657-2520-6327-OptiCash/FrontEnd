@@ -8,7 +8,7 @@ import { environment } from '../../../../core/environments/environment';
   selector: 'app-home',
   standalone: false,
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
 
@@ -22,60 +22,50 @@ export class HomeComponent implements OnInit {
     private http: HttpClient
   ) {}
 
-  ngOnInit(): void {
-    const userId = Number(localStorage.getItem('userId'));
-    if (!userId) {
-      console.error('userId no encontrado en localStorage');
-      return;
-    }
+  ngOnInit() {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser')!);
+    if (!currentUser || !currentUser.id) return;
 
-    this.householdService.getHouseholdByRepresentante(userId).subscribe({
-      next: (households) => {
-        console.log('Households encontrados:', households);
-        this.household = households[0] || null;
+    // Obtenemos los hogares del usuario activo
+  this.householdService.getHouseholdsByUserId(currentUser.id).subscribe({
+  next: hogares => {
+    // Filtrar solo los hogares del usuario (si backend no hace el filtrado)
+    const hogaresUsuario = hogares.filter(h => h.representanteId === currentUser.id);
 
-        if (this.household) {
-          const hid = this.household.id;
-          console.log('Household ID:', hid);
+    if (hogaresUsuario.length === 0) return;
 
-          const headers = new HttpHeaders({
-            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-          });
+    const firstHousehold = hogaresUsuario[0];
+    this.household = firstHousehold;
+    this.cargarDetalles(firstHousehold.id);
+  },
+  error: err => console.error("Error obteniendo hogares del usuario:", err)
+});
 
-          // Obtener miembros y filtrar por household_id en el frontend
-          this.http.get<any[]>(`${environment.urlBackend}/household-members`, { headers })
-            .subscribe({
-              next: (allMembers) => {
-                this.members = allMembers.filter(member => member.householdId === hid);
-                console.log('Miembros filtrados:', this.members);
-              },
-              error: (err) => console.error('Error obteniendo miembros:', err)
-            });
-
-          // Obtener bills y filtrar por household_id en el frontend
-          this.http.get<any[]>(`${environment.urlBackend}/bills`, { headers })
-            .subscribe({
-              next: (allBills) => {
-                this.bills = allBills.filter(bill => bill.householdId === hid);
-                console.log('Bills filtradas:', this.bills);
-              },
-              error: (err) => console.error('Error obteniendo bills:', err)
-            });
-
-          // Obtener contributions y filtrar por household_id en el frontend
-          this.http.get<any[]>(`${environment.urlBackend}/contributions`, { headers })
-            .subscribe({
-              next: (allContributions) => {
-                this.contributions = allContributions.filter(contribution => contribution.householdId === hid);
-                console.log('Contributions filtradas:', this.contributions);
-              },
-              error: (err) => console.error('Error obteniendo contributions:', err)
-            });
-        } else {
-          console.log('No se encontró household para el usuario:', userId);
-        }
-      },
-      error: err => console.error('Error obteniendo household:', err)
-    });
   }
+
+  // Cargar miembros, cuentas y contribuciones
+  private cargarDetalles(householdId: number) {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+    });
+
+    // Miembros
+    this.http.get<any[]>(`${environment.urlBackend}/household-members`, { headers })
+      .subscribe(allMembers => {
+        this.members = allMembers.filter(m => m.householdId === householdId);
+      });
+
+    // Bills
+    this.http.get<any[]>(`${environment.urlBackend}/bills`, { headers })
+      .subscribe(allBills => {
+        this.bills = allBills.filter(b => b.householdId === householdId);
+      });
+
+    // Contributions
+    this.http.get<any[]>(`${environment.urlBackend}/contributions`, { headers })
+      .subscribe(allContributions => {
+        this.contributions = allContributions.filter(c => c.householdId === householdId);
+      });
+  }
+
 }

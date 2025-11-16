@@ -1,5 +1,5 @@
 export interface Household {
-  id: number;
+  id?: number;
   name: string;
   description: string;
   currency: string;

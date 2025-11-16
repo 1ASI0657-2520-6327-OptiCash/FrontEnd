@@ -1,241 +1,43 @@
-<p-button
-  label="Nueva Contribución"
-  icon="pi pi-plus"
-  (onClick)="abrirDialogo()"
-  class="mb-3">
-</p-button>
-<br>
-<p-table
-  [value]="contributions"
-  dataKey="id"
-  class="p-datatable-sm"
-  [loading]="loading">
+<form [formGroup]="contributionForm" (ngSubmit)="guardarContribution()">
 
-  <ng-template pTemplate="header">
-    <tr>
-      <th>Descripción</th>
-      <th>Estrategia</th>
-      <th>Fecha Límite</th>
-      <th>Monto Total (S/)</th>
-      <th>Acciones</th>
-    </tr>
-  </ng-template>
+  <div class="form-field">
+    <label>Factura *</label>
+    <select formControlName="billId">
+      <option *ngFor="let b of bills" [value]="b.id">{{ b.description }} - {{ b.monto | currency }}</option>
+    </select>
+  </div>
 
-  <ng-template pTemplate="body" let-contribution>
-    <tr>
-      <td>
-        <i [class]="contribution.expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
-           (click)="contribution.expanded = !contribution.expanded"
-           class="toggler cursor-pointer mr-2">
-        </i>
-        {{ contribution.description }}
-      </td>
-      <td>{{ contribution.strategy === 'EQUAL' ? 'Igualitaria' : 'Según Ingresos' }}</td>
-      <td>{{ contribution.fechaLimite | date: 'dd/MM/yyyy' }}</td>
-      <td>{{ contribution.montoTotal | currency: 'PEN':'symbol':'1.2-2' }}</td>
-      <td>
-        <p-button
-          icon="pi pi-eye"
-          class="p-button-rounded p-button-text p-button-sm"
-          (onClick)="contribution.expanded = !contribution.expanded"
-          pTooltip="Ver detalles">
-        </p-button>
-      </td>
-    </tr>
+  <div class="form-field">
+    <label>Hogar *</label>
+    <select formControlName="householdId">
+      <option *ngFor="let h of households" [value]="h.id">{{ h.name }}</option>
+    </select>
+  </div>
 
-    <!-- Fila expandible con detalles -->
-    <tr *ngIf="contribution.expanded">
-      <td colspan="5" class="p-0">
-        <div class="p-3 bg-gray-50">
-          <h6 class="mb-2">Detalles de Contribución</h6>
-          <p-table
-            [value]="contribution.details"
-            styleClass="p-datatable-nested p-datatable-sm">
+  <div class="form-field">
+    <label>Descripción *</label>
+    <input type="text" formControlName="description" />
+  </div>
 
-            <ng-template pTemplate="header">
-              <tr>
-                <th>Miembro</th>
-                <th>Rol</th>
-                <th>Monto (S/)</th>
-                <th>Estado</th>
-                <th>Fecha Pago</th>
-              </tr>
-            </ng-template>
+  <div class="form-field">
+    <label>Estrategia *</label>
+    <select formControlName="strategy">
+      <option value="EQUAL">Igualitaria</option>
+      <option value="INCOME_BASED">Según ingresos</option>
+    </select>
+  </div>
 
-            <ng-template pTemplate="body" let-detail>
-              <tr>
-                <td>{{ detail.user?.username || 'Sin nombre' }}</td>
-                <td>
-                  <span class="p-tag p-tag-sm"
-                        [class]="detail.user?.role === 'REPRESENTANTE' ? 'p-tag-success' : 'p-tag-info'">
-                    {{ detail.user?.role === 'REPRESENTANTE' ? 'Representante' : 'Miembro' }}
-                  </span>
-                </td>
-                <td>{{ detail.monto | currency: 'PEN':'symbol':'1.2-2' }}</td>
-                <td>
-                  <span class="p-tag p-tag-sm"
-                        [class]="getStatusClass(detail.status)">
-                    {{ getStatusLabel(detail.status) }}
-                  </span>
-                </td>
-                <td>{{ detail.pagado_en ? (detail.pagado_en | date: 'dd/MM/yyyy') : '-' }}</td>
-              </tr>
-            </ng-template>
+  <div class="form-field">
+    <label>Fecha límite *</label>
+    <input type="date" formControlName="fechaLimite" />
+  </div>
 
-            <ng-template pTemplate="emptymessage">
-              <tr>
-                <td colspan="5" class="text-center text-gray-500 py-3">
-                  Sin registros de pagos
-                </td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </div>
-      </td>
-    </tr>
-  </ng-template>
+  <button type="submit" [disabled]="contributionForm.invalid">Crear Contribución</button>
+</form>
 
-  <ng-template pTemplate="emptymessage">
-    <tr>
-      <td colspan="5" class="text-center text-gray-500 py-4">
-        No hay contribuciones disponibles
-      </td>
-    </tr>
-  </ng-template>
-</p-table>
-
-<!-- ✅ DIALOG CORREGIDO -->
-<p-dialog
-  header="Crear contribución"
-  [(visible)]="mostrarDialogo"
-  [modal]="true"
-  [closable]="true"
-  [style]="{ width: '40vw' }">
-
-  <form [formGroup]="contributionForm" (ngSubmit)="guardarContribution()">
-
-    <!-- Factura -->
-    <div class="p-field mb-3">
-      <label for="billId" class="block mb-2 font-medium">Factura *</label>
-      <p-dropdown
-        formControlName="billId"
-        [options]="bills"
-        optionLabel="descripcion"
-        optionValue="id"
-        placeholder="Selecciona una factura"
-        class="w-full">
-      </p-dropdown>
-      <small class="p-error" *ngIf="contributionForm.get('billId')?.errors?.['required'] && contributionForm.get('billId')?.touched">
-        La factura es requerida
-      </small>
-    </div>
-
-    <!-- Descripción -->
-    <div class="p-field mb-3">
-      <label for="description" class="block mb-2 font-medium">Descripción *</label>
-      <input
-        id="description"
-        type="text"
-        pInputText
-        formControlName="description"
-        placeholder="Descripción de la contribución"
-        class="w-full" />
-      <small class="p-error" *ngIf="contributionForm.get('description')?.errors?.['required'] && contributionForm.get('description')?.touched">
-        La descripción es requerida
-      </small>
-    </div>
-
-    <!-- Fecha Límite -->
-    <div class="p-field mb-3">
-      <label for="fechaLimite" class="block mb-2 font-medium">Fecha Límite *</label>
-      <p-calendar
-        formControlName="fechaLimite"
-        dateFormat="dd/mm/yy"
-        [showIcon]="true"
-        [showButtonBar]="true"
-        placeholder="Selecciona una fecha"
-        class="w-full">
-      </p-calendar>
-      <small class="p-error" *ngIf="contributionForm.get('fechaLimite')?.errors?.['required'] && contributionForm.get('fechaLimite')?.touched">
-        La fecha límite es requerida
-      </small>
-    </div>
-
-    <!-- Estrategia -->
-    <div class="p-field mb-3">
-      <label for="strategy" class="block mb-2 font-medium">Estrategia *</label>
-      <p-dropdown
-        formControlName="strategy"
-        [options]="estrategias"
-        optionLabel="label"
-        optionValue="value"
-        placeholder="Selecciona una estrategia"
-        class="w-full">
-      </p-dropdown>
-      <small class="p-error" *ngIf="contributionForm.get('strategy')?.errors?.['required'] && contributionForm.get('strategy')?.touched">
-        La estrategia es requerida
-      </small>
-    </div>
-
-    <!-- ✅ MIEMBROS CORREGIDO -->
-    <div class="p-field mb-3">
-      <label for="miembros" class="block mb-2 font-medium">Miembros *</label>
-      <p-multiSelect
-        formControlName="miembros"
-        [options]="miembros"
-        optionLabel="name"
-        optionValue="id"
-        display="chip"
-        placeholder="Selecciona miembros"
-        class="w-full">
-
-        <!-- Template personalizado para mostrar información adicional -->
-        <ng-template let-option pTemplate="item">
-          <div class="flex align-items-center">
-            <span class="ml-2">{{ option.name }}</span>
-            <span class="ml-auto">
-              <small class="text-gray-500">({{ option.role }})</small>
-            </span>
-          </div>
-        </ng-template>
-      </p-multiSelect>
-      <small class="p-error" *ngIf="contributionForm.get('miembros')?.errors?.['required'] && contributionForm.get('miembros')?.touched">
-        Debes seleccionar al menos un miembro
-      </small>
-    </div>
-
-    <!-- Información adicional -->
-    <div class="p-field mb-3" *ngIf="contributionForm.get('billId')?.value">
-      <div class="p-3 bg-blue-50 border-round">
-        <h6 class="mt-0 mb-2">Información de la Factura</h6>
-        <p class="m-0">
-          <strong>Monto Total:</strong>
-          <input type="text"
-       pInputText
-       [value]="selectedBillMonto | currency:'PEN':'symbol':'1.2-2'"
-       readonly />
-        </p>
-        <p class="m-0 mt-1" *ngIf="contributionForm.get('miembros')?.value?.length > 0">
-          <strong>Miembros seleccionados:</strong> {{ contributionForm.get('miembros')?.value?.length }}
-        </p>
-      </div>
-    </div>
-
-    <!-- Botones -->
-    <div class="flex justify-content-end gap-2 mt-4">
-      <p-button
-        type="button"
-        label="Cancelar"
-        severity="secondary"
-        (onClick)="cerrarDialogo()">
-      </p-button>
-      <p-button
-        type="submit"
-        label="Guardar"
-        [disabled]="contributionForm.invalid || loading"
-        [loading]="loading">
-      </p-button>
-    </div>
-
-  </form>
-</p-dialog>
+<h2>Contribuciones del hogar</h2>
+<ul>
+  <li *ngFor="let c of contributions">
+    {{ c.description }} - {{ c.strategy }} - {{ c.fechaLimite }} - Factura: {{ c.billId }}
+  </li>
+</ul>

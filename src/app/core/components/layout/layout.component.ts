@@ -4,7 +4,7 @@ import { Component, HostListener, OnInit } from '@angular/core';
   selector: 'app-layout',
   standalone: false,
   templateUrl: './layout.component.html',
-  styleUrl: './layout.component.css'
+  styleUrls: ['./layout.component.css']
 })
 export class LayoutComponent implements OnInit {
   isSidebarOpen = true;
@@ -47,12 +47,13 @@ export class LayoutComponent implements OnInit {
     this.closeMobileSidebar();
   }
 
-  @HostListener('document:keydown.escape', ['$event'])
-  onEscapeKey(event: KeyboardEvent): void {
-    if (this.isSidebarOpenMobile) {
-      this.closeMobileSidebar();
-    }
+@HostListener('document:keydown', ['$event'])
+onEscapeKey(event: KeyboardEvent): void {
+  if (event.key === 'Escape' && this.isSidebarOpenMobile) {
+    this.closeMobileSidebar();
   }
+}
+
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any): void {

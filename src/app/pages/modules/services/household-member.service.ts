@@ -9,7 +9,7 @@ import { catchError, map, tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class HouseholdMemberService {
-  private memberUrl = `${environment.urlBackend}/household-members`;
+  private memberUrl = `${environment.urlGateway}/api/v1/household-members`;
 
   constructor(private http: HttpClient) { }
 

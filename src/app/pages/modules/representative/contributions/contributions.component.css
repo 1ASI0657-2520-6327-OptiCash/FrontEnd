@@ -10,104 +10,143 @@
   --text-primary: #f8f9fa;
   --text-secondary: #adb5bd;
 }
-
-:host ::ng-deep .p-datatable {
-  background: var(--background-main);
-  border-radius: 16px;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 8px 20px var(--shadow-color);
+/* Fondo general y tipografía */
+body {
+  background-color: var(--background-main);
   color: var(--text-primary);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
-:host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
-  background: transparent;
-  border-bottom: 2px solid var(--border-color);
-  color: var(--text-secondary);
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 1rem 1.5rem;
-}
-
-:host ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--border-color);
-  color: var(--text-primary);
-  background: var(--background-main);
-}
-
-:host ::ng-deep .p-datatable .p-datatable-tbody > tr {
-  transition: background-color 0.2s ease;
-  background: var(--background-main);
-}
-
-:host ::ng-deep .p-datatable .p-datatable-tbody > tr:hover {
-  background-color: var(--background-hover) !important;
-}
-
-:host ::ng-deep .p-datatable .p-datatable-tbody > tr:last-child > td {
-  border-bottom: none;
-}
-
-:host ::ng-deep .p-datatable .p-datatable-tbody .nested-td {
+/* Contenedor del formulario */
+form {
   background: var(--background-card);
-  border-radius: 8px;
-  padding: 1rem 0.5rem;
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px var(--shadow-color);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem 2rem;
+  align-items: center;
 }
 
-:host ::ng-deep .p-datatable-nested {
-  background: var(--background-main);
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-  margin-top: 1rem;
+/* Campos del formulario */
+form .form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
 }
 
-:host ::ng-deep .p-datatable-nested .p-datatable-thead > tr > th,
-:host ::ng-deep .p-datatable-nested .p-datatable-tbody > tr > td {
-  background: transparent;
-  color: var(--text-secondary);
-  border-bottom: 1px solid var(--border-color);
-  padding: 0.5rem 1rem;
-}
-
-:host ::ng-deep .p-datatable-nested .p-datatable-tbody > tr > td {
+form label {
   color: var(--text-primary);
-  background: var(--background-main);
+  font-weight: 600;
 }
 
-:host ::ng-deep .p-datatable-nested .p-datatable-tbody > tr {
-  background: var(--background-main);
-  transition: background-color 0.2s ease;
+form input,
+form select {
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--brand-primary);
+  background-color: var(--background-hover);
+  color: var(--text-primary);
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
 }
 
-:host ::ng-deep .p-datatable-nested .p-datatable-tbody > tr:hover {
-  background-color: var(--background-hover) !important;
+form input:focus,
+form select:focus {
+  outline: none;
+  border-color: var(--brand-secondary);
+  box-shadow: 0 0 8px var(--brand-secondary);
 }
 
-:host ::ng-deep .toggler {
-  color: var(--brand-primary);
-  font-size: 1.1rem;
+/* Botón centrado */
+form button {
+  grid-column: 1 / -1;
+  padding: 0.9rem 1.2rem;
+  font-weight: 600;
+  font-size: 1.05rem;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+  color: var(--text-primary);
   cursor: pointer;
-  margin-right: 0.5rem;
-  vertical-align: middle;
+  transition: all 0.3s ease;
+  justify-self: center;
+  width: 250px;
 }
 
-:host ::ng-deep .status-pagado {
-  color: #43a047;
-  font-weight: 600;
-}
-:host ::ng-deep .status-pendiente {
-  color: #ffb300;
-  font-weight: 600;
-}
-:host ::ng-deep .status-vencido {
-  color: #d32f2f;
-  font-weight: 600;
+form button:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--brand-secondary), var(--brand-primary));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(21, 101, 192, 0.6);
 }
 
-:host ::ng-deep .empty-message {
-  color: var(--text-secondary);
+form button:disabled {
+  background: var(--border-color);
+  cursor: not-allowed;
+}
+
+/* Título de contribuciones */
+h2 {
   text-align: center;
-  padding: 1.5rem 0;
+  color: var(--brand-primary);
+  margin-top: 2rem;
+  font-size: 1.7rem;
+  letter-spacing: 0.5px;
+}
+
+/* Lista de contribuciones estilo "tabla/tarjeta" */
+ul {
+  list-style: none;
+  padding: 0;
+  max-width: 900px;
+  margin: 1.5rem auto 3rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+ul li {
+  background: var(--background-card);
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  border-left: 5px solid var(--brand-primary);
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr; /* descripción, estrategia, fecha, factura */
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+ul li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--shadow-color);
+}
+
+/* Cada elemento dentro de la contribución */
+ul li span {
+  display: block;
+  overflow-wrap: anywhere;
+  color: var(--text-primary);
+}
+
+ul li span.strategy {
+  color: var(--brand-secondary);
+  font-weight: 600;
+}
+
+ul li span.fecha {
+  color: var(--text-secondary);
+}
+
+ul li span.factura {
+  color: var(--brand-primary);
+  font-weight: 600;
 }

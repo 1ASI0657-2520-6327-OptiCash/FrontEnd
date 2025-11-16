@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BillResponse, CreateBillRequest } from '../../interfaces/bills';
@@ -10,11 +9,13 @@ import { HouseholdService } from '../../services/household.service';
   selector: 'app-bills',
   standalone: false,
   templateUrl: './bills.component.html',
-  styleUrl: './bills.component.css'
+  styleUrls: ['./bills.component.css']
 })
 export class BillsComponent implements OnInit {
+
   bills: BillResponse[] = [];
-  householdId: number = 0;
+  hogaresDelUsuario: any[] = [];
+  householdId: number | null = null;
   loading = true;
   formVisible = false;
   billForm!: FormGroup;
@@ -35,68 +36,66 @@ export class BillsComponent implements OnInit {
       if (userString) {
         this.currentUser = JSON.parse(userString);
         this.isRepresentante = this.currentUser.roles.includes('ROLE_REPRESENTANTE');
-        console.log('Usuario actual:', this.currentUser);
-        console.log('Es representante:', this.isRepresentante);
       } else {
         this.errorMessage = 'No se encontró información del usuario';
         this.loading = false;
         return;
       }
     } catch (error) {
-      console.error('Error al parsear usuario:', error);
       this.errorMessage = 'Error al cargar información del usuario';
       this.loading = false;
       return;
     }
 
     this.initializeForm();
-    this.loadUserHousehold();
+    this.loadUserHouseholds();
   }
 
   private initializeForm() {
     this.billForm = this.fb.group({
+      householdId: [null, Validators.required],  // Se actualizará cuando carguen los hogares
       descripcion: ['', Validators.required],
       monto: [null, [Validators.required, Validators.min(0)]],
       fecha: [new Date().toISOString().substring(0, 10), Validators.required]
     });
   }
 
-  private loadUserHousehold() {
-    console.log('Cargando households para usuario:', this.currentUser.id);
+private loadUserHouseholds() {
+  this.householdService.getHouseholdsByUserId(this.currentUser.id).subscribe({
+    next: (households) => {
+      // Aquí aseguramos que solo sean los hogares de este usuario
+      this.hogaresDelUsuario = households.filter(h => h.representanteId === this.currentUser.id);
 
-    this.householdService.getHouseholdByRepresentante(this.currentUser.id).subscribe({
-      next: (households) => {
-        console.log('Households encontrados:', households);
-        if (households.length > 0) {
-          this.householdId = households[0].id;
-          console.log('Household ID seleccionado:', this.householdId);
-          this.loadBills();
-        } else {
-          console.log('No se encontraron households para este usuario');
-          this.errorMessage = 'No se encontraron hogares para este usuario';
-          this.loading = false;
-        }
-      },
-      error: (error) => {
-        console.error('Error loading households:', error);
-        this.errorMessage = 'Error al cargar los hogares: ' + (error.message || 'Error desconocido');
+      if (this.hogaresDelUsuario.length > 0) {
+        this.householdId = this.hogaresDelUsuario[0].id!;
+        this.billForm.patchValue({ householdId: this.householdId });
+        this.loadBills();
+      } else {
+        this.errorMessage = 'No se encontraron hogares para este usuario';
         this.loading = false;
       }
-    });
-  }
+    },
+    error: (err) => {
+      console.error('Error al cargar hogares:', err);
+      this.errorMessage = 'Error al cargar hogares';
+      this.loading = false;
+    }
+  });
+}
+
+
 
   private loadBills() {
-    console.log('Cargando bills para household:', this.householdId);
+    if (!this.householdId) return;
 
     this.billsService.getBillsByHousehold(this.householdId).subscribe({
       next: (bills) => {
-        console.log('Bills cargadas:', bills);
         this.bills = bills;
         this.loading = false;
       },
-      error: (error) => {
-        console.error('Error loading bills:', error);
-        this.errorMessage = 'Error al cargar las facturas: ' + (error.message || 'Error desconocido');
+      error: (err) => {
+        console.error('Error al cargar bills:', err);
+        this.errorMessage = 'Error al cargar las facturas';
         this.loading = false;
       }
     });
@@ -107,10 +106,10 @@ export class BillsComponent implements OnInit {
       alert('Solo los representantes pueden crear bills');
       return;
     }
-
     this.editingBillId = null;
     this.formVisible = true;
     this.billForm.reset({
+      householdId: this.householdId,
       descripcion: '',
       monto: null,
       fecha: new Date().toISOString().substring(0, 10)
@@ -118,10 +117,7 @@ export class BillsComponent implements OnInit {
   }
 
   submit() {
-    if (!this.billForm.valid) {
-      console.log('Formulario inválido:', this.billForm.errors);
-      return;
-    }
+    if (!this.billForm.valid) return;
 
     if (this.editingBillId) {
       this.updateBill();
@@ -130,109 +126,99 @@ export class BillsComponent implements OnInit {
     }
   }
 
-  private createBill() {
-    const createBillRequest: CreateBillRequest = {
-      householdId: this.householdId,
-      descripcion: this.billForm.value.descripcion,
-      monto: this.billForm.value.monto,
-      fecha: this.billForm.value.fecha
-    };
-
-    console.log('Creando bill:', createBillRequest);
-
-    this.billsService.createBill(createBillRequest).subscribe({
-      next: (savedBill) => {
-        console.log('Bill creada exitosamente:', savedBill);
-        this.bills.push(savedBill);
-        this.formVisible = false;
-        this.billForm.reset();
-      },
-      error: (error) => {
-        console.error('Error creating bill:', error);
-        alert('Error al crear la bill: ' + (error.message || 'Error desconocido'));
-      }
-    });
+private createBill() {
+  const householdId = this.billForm.value.householdId;
+  if (!householdId) {
+    alert('Debes seleccionar un hogar antes de crear la factura');
+    return;
   }
 
-  private updateBill() {
-    if (!this.editingBillId) return;
+  const createBillRequest: CreateBillRequest = {
+    householdId,
+    description: this.billForm.value.descripcion, // <-- aquí cambias al campo correcto
+    monto: this.billForm.value.monto,
+    fecha: this.billForm.value.fecha,
+    createdBy: this.currentUser.id           // agregamos el ID del usuario
+  };
 
-    const updateRequest = {
-      descripcion: this.billForm.value.descripcion,
-      monto: this.billForm.value.monto,
-      fecha: this.billForm.value.fecha
-    };
+  console.log('Payload enviado:', createBillRequest);
 
-    this.billsService.updateBill(this.editingBillId, updateRequest).subscribe({
-      next: (updatedBill) => {
-        console.log('Bill actualizada exitosamente:', updatedBill);
-        const index = this.bills.findIndex(bill => bill.id === this.editingBillId);
-        if (index !== -1) {
-          this.bills[index] = updatedBill;
-        }
-        this.formVisible = false;
-        this.billForm.reset();
-        this.editingBillId = null;
-      },
-      error: (error) => {
-        console.error('Error updating bill:', error);
-        alert('Error al actualizar la bill: ' + (error.message || 'Error desconocido'));
-      }
-    });
-  }
-
-  editBill(bill: BillResponse) {
-    if (!this.isRepresentante) {
-      alert('Solo los representantes pueden editar bills');
-      return;
+  this.billsService.createBill(createBillRequest).subscribe({
+    next: (savedBill) => {
+      this.bills.push(savedBill);
+      this.formVisible = false;
+      this.billForm.reset({ householdId });
+    },
+    error: (err) => {
+      console.error('Error creando bill:', err);
+      alert('Error al crear la factura');
     }
+  });
+}
 
-    this.editingBillId = bill.id;
-    this.billForm.patchValue({
-      descripcion: bill.descripcion,
-      monto: bill.monto,
-      fecha: bill.fecha
-    });
-    this.formVisible = true;
-  }
+
+
+ private updateBill() {
+  if (!this.editingBillId) return;
+
+  const updateRequest = {
+    description: this.billForm.value.descripcion,  // aquí debes usar description
+    monto: this.billForm.value.monto,
+    fecha: this.billForm.value.fecha
+  };
+
+  this.billsService.updateBill(this.editingBillId, updateRequest).subscribe({
+    next: (updatedBill) => {
+      const idx = this.bills.findIndex(b => b.id === this.editingBillId);
+      if (idx !== -1) this.bills[idx] = updatedBill;
+      this.formVisible = false;
+      this.editingBillId = null;
+    },
+    error: (err) => {
+      console.error('Error actualizando bill:', err);
+      alert('Error al actualizar la factura');
+    }
+  });
+}
+
+
+ editBill(bill: BillResponse) {
+  if (!this.isRepresentante) return;
+
+  this.editingBillId = bill.id;
+  this.formVisible = true;
+  this.billForm.patchValue({
+    householdId: bill.householdId,
+    descripcion: bill.description,  // aquí asignas el campo 'description' al form control 'descripcion'
+    monto: bill.monto,
+    fecha: bill.fecha
+  });
+}
 
   deleteBill(billId: number) {
-    if (!this.isRepresentante) {
-      alert('Solo los representantes pueden eliminar bills');
-      return;
-    }
+    if (!this.isRepresentante) return;
 
-    if (confirm('¿Estás seguro de que quieres eliminar esta bill?')) {
-      this.billsService.deleteBill(billId).subscribe({
-        next: () => {
-          console.log('Bill eliminada exitosamente');
-          this.bills = this.bills.filter(bill => bill.id !== billId);
-        },
-        error: (error) => {
-          console.error('Error deleting bill:', error);
-          alert('Error al eliminar la bill: ' + (error.message || 'Error desconocido'));
-        }
-      });
-    }
+    if (!confirm('¿Seguro que quieres eliminar esta factura?')) return;
+
+    this.billsService.deleteBill(billId).subscribe({
+      next: () => this.bills = this.bills.filter(b => b.id !== billId),
+      error: (err) => alert('Error al eliminar factura')
+    });
   }
 
   cancelForm() {
     this.formVisible = false;
-    this.billForm.reset();
+    this.billForm.reset({ householdId: this.householdId });
     this.editingBillId = null;
   }
 
-  formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('es-PE', {
-      style: 'currency',
-      currency: 'PEN' // O usa la moneda del household
-    }).format(amount);
-  }
-
-  // Método para recargar los datos
   reloadData() {
     this.loading = true;
     this.errorMessage = '';
-    this.loadUserHousehold();
+    this.loadUserHouseholds();
+  }
+
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' }).format(amount);
   }
 }

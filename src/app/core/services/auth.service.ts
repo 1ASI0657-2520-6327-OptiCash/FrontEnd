@@ -15,6 +15,15 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
+  getAuthHeaders(): HttpHeaders | null {
+  const token = localStorage.getItem('accessToken');
+  if (!token) {
+    console.warn('JWT no encontrado en localStorage');
+    return null;
+  }
+  return new HttpHeaders({ Authorization: `Bearer ${token}` });
+}
+
   // Registro
   signUp(payload: SignUpRequest): Observable<User> {
     return this.http.post<User>(`${this.authUrl}/sign-up`, payload).pipe(

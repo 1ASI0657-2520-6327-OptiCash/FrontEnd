@@ -43,7 +43,7 @@
           </tr>
 
           <tr *ngFor="let bill of bills" class="bill-row">
-            <td class="description-cell">{{ bill.descripcion }}</td>
+            <td class="description-cell">{{ bill.description}}</td>
             <td class="amount-cell">{{ formatCurrency(bill.monto) }}</td>
             <td class="date-cell">{{ bill.fecha | date:'dd/MM/yyyy' }}</td>
             <td class="user-cell">{{ bill.createdBy }}</td>
@@ -85,6 +85,15 @@
     [(visible)]="formVisible" [modal]="true" [closable]="true" [dismissableMask]="true" [style]="{ width: '500px' }"
     (onHide)="cancelForm()">
     <form [formGroup]="billForm" (ngSubmit)="submit()">
+<div class="form-group">
+  <label for="household">Hogar *</label>
+<select id="household" formControlName="householdId" [disabled]="hogaresDelUsuario.length === 1">
+  <option *ngFor="let h of hogaresDelUsuario" [value]="h.id">{{ h.name }}</option>
+</select>
+
+</div>
+
+
       <div class="form-group">
         <label for="descripcion">{{ 'BILLS.DESCRIPTION' | translate }} *</label>
         <br>
