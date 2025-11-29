@@ -95,7 +95,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   loadUserData(): void {
-    this.http.get<User>(`${environment.urlBackendIAM}/users/${this.userId}`, this.getAuthHeaders())
+    this.http.get<User>(`${environment.urlBackend}/users/${this.userId}`, this.getAuthHeaders())
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: userData => this.profileForm.patchValue(userData),
@@ -104,7 +104,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   loadSettingsData(): void {
-    this.http.get<UserSettings[]>(`${environment.urlBackendHouseholds}/settings?user_id=${this.userId}`, this.getAuthHeaders())
+    this.http.get<UserSettings[]>(`${environment.urlBackend}/settings?user_id=${this.userId}`, this.getAuthHeaders())
       .pipe(takeUntil(this.destroy$))
       .subscribe(settings => {
         if (settings.length > 0) {
@@ -117,7 +117,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   saveProfile(): void {
     if (this.profileForm.invalid) return;
-    this.http.patch(`${environment.urlBackendIAM}/users/${this.userId}`, this.profileForm.value, this.getAuthHeaders())
+    this.http.patch(`${environment.urlBackend}/users/${this.userId}`, this.profileForm.value, this.getAuthHeaders())
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => alert('Perfil actualizado con éxito'));
   }
@@ -126,8 +126,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
     if (this.settingsForm.invalid) return;
     const payload = { ...this.settingsForm.value, user_id: this.userId };
     const request = this.settingId
-      ? this.http.patch(`${environment.urlBackendHouseholds}/settings/${this.settingId}`, payload, this.getAuthHeaders())
-      : this.http.post(`${environment.urlBackendHouseholds}/settings`, payload, this.getAuthHeaders());
+      ? this.http.patch(`${environment.urlBackend}/settings/${this.settingId}`, payload, this.getAuthHeaders())
+      : this.http.post(`${environment.urlBackend}/settings`, payload, this.getAuthHeaders());
 
     request.pipe(takeUntil(this.destroy$)).subscribe(() => alert('Configuración guardada'));
   }
@@ -137,7 +137,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     const { currentPassword, newPassword } = this.passwordForm.value;
 
     // 🔹 Backend debe validar password; frontend solo envía
-    this.http.patch(`${environment.urlBackendIAM}/users/${this.userId}/password`, { currentPassword, newPassword }, this.getAuthHeaders())
+    this.http.patch(`${environment.urlBackend}/users/${this.userId}/password`, { currentPassword, newPassword }, this.getAuthHeaders())
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
@@ -151,7 +151,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   deleteAccount(): void {
     const confirmation = prompt('Esta acción es irreversible. Escribe tu correo para confirmar:');
     if (confirmation && confirmation.toLowerCase() === this.profileForm.value.email.toLowerCase()) {
-      this.http.delete(`${environment.urlBackendIAM}/users/${this.userId}`, this.getAuthHeaders())
+      this.http.delete(`${environment.urlBackend}/users/${this.userId}`, this.getAuthHeaders())
         .pipe(takeUntil(this.destroy$))
         .subscribe(() => alert('Cuenta eliminada.'));
     } else {

@@ -8,8 +8,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class BillsService {
-  
-private billsUrl = `${environment.urlGateway}/api/v1/bills`;
+
+private billsUrl = `${environment.urlBackend}/api/v1/bills`;
 
   constructor(private http: HttpClient) { }
 
