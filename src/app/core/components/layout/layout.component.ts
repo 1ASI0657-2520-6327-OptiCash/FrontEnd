@@ -1,4 +1,5 @@
 import { Component, HostListener, OnInit } from '@angular/core';
+import {SidebarService} from '../../services/sidebar.service';
 
 @Component({
   selector: 'app-layout',
@@ -11,8 +12,11 @@ export class LayoutComponent implements OnInit {
   isSidebarOpenMobile = false;
   isMobile = false;
 
+  constructor(private  sidebarService: SidebarService) {}
+
   ngOnInit(): void {
-    this.initializeSidebarState();
+    this.initializeSidebarState()
+    this.sidebarService.generateMenu();
   }
   private initializeSidebarState(): void {
     const windowWidth = window.innerWidth;
