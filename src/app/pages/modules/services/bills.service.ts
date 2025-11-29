@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 })
 export class BillsService {
 
-private billsUrl = `${environment.urlBackend}/api/v1/bills`;
+private billsUrl = `${environment.urlBackend}/bills`;
 
   constructor(private http: HttpClient) { }
 

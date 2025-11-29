@@ -53,7 +53,7 @@ export class MembersComponent implements OnInit {
   householdMembersLinks: HouseholdMember[] = [];
   hogaresDelUsuario: any[] = [];
 
-private readonly API_URL = 'http://localhost:8080/api/v1';
+private readonly API_URL = `${environment.urlBackend}`;
 
   constructor(
     private http: HttpClient,

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Household } from '../interfaces/household';
-import { environment } from '../../../core/environments/environment';
+import { environment } from '../../../../app/core/environments/environment';
 import { HouseholdResponse } from '../../../../app/pages/modules/interfaces/householdresponse';
 
 @Injectable({
@@ -10,7 +10,7 @@ import { HouseholdResponse } from '../../../../app/pages/modules/interfaces/hous
 })
 export class HouseholdService {
 
-  private gatewayUrl = 'http://localhost:8080/api/v1';
+  private baseUrl =  `${environment.urlBackend}`;
 
   constructor(private http: HttpClient) {}
 private getAuthHeaders(): HttpHeaders {
@@ -22,27 +22,27 @@ private getAuthHeaders(): HttpHeaders {
 
   createHousehold(household: Household): Observable<HouseholdResponse> {
     const headers = this.getAuthHeaders();
-    return this.http.post<HouseholdResponse>(`${this.gatewayUrl}/households`, household, { headers });
+    return this.http.post<HouseholdResponse>(`${this.baseUrl}/households`, household, { headers });
   }
 
   addHouseholdMember(member: { householdId: number; userId: number }): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.post(`${this.gatewayUrl}/household-members`, member, { headers });
+    return this.http.post(`${this.baseUrl}/household-members`, member, { headers });
   }
-  
-getHouseholdById(id: number): Observable<Household> {
+
+ getHouseholdById(id: number): Observable<Household> {
   const headers = this.getAuthHeaders();
-  return this.http.get<Household>(`${this.gatewayUrl}/households/${id}`, { headers });
+  return this.http.get<Household>(`${this.baseUrl}/households/${id}`, { headers });
 }
 getHouseholdsByUserId(userId: number): Observable<HouseholdResponse[]> {
   const headers = this.getAuthHeaders();
-  return this.http.get<HouseholdResponse[]>(`${this.gatewayUrl}/households?representanteId=${userId}`, { headers });
+  return this.http.get<HouseholdResponse[]>(`${this.baseUrl}/households?representanteId=${userId}`, { headers });
 }
 
 
 getAllHouseholds(): Observable<Household[]> {
   const headers = this.getAuthHeaders();
-  return this.http.get<Household[]>(`${this.gatewayUrl}/households`, { headers });
+  return this.http.get<Household[]>(`${this.baseUrl}/households`, { headers });
 }
 
 
