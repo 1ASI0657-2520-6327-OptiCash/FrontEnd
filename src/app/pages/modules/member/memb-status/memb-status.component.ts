@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
+import { environment } from '../../../../../app/core/environments/environment';
 
 @Component({
   selector: 'app-memb-status',
@@ -30,11 +31,13 @@ export class MembStatusComponent implements OnInit {
   }
 
   loadStatus(): void {
-    this.http.get<any[]>(`https://backend-vbxt.onrender.com/api/v1/member_contributions?member_id=${this.userId}`).subscribe(mcList => {
+    const base = environment.urlBackend;
+
+    this.http.get<any[]>(`${base}/member_contributions?member_id=${this.userId}`).subscribe(mcList => {
       const contribIds = mcList.map(mc => mc.contribution_id);
 
-      this.http.get<any[]>(`https://backend-vbxt.onrender.com/api/v1/contributions`).subscribe(allContribs => {
-        this.http.get<any[]>(`https://backend-vbxt.onrender.com/api/v1/bills`).subscribe(bills => {
+      this.http.get<any[]>(`${base}/contributions`).subscribe(allContribs => {
+        this.http.get<any[]>(`${base}/bills`).subscribe(bills => {
           this.statusList = mcList.map(mc => {
             const contrib = allContribs.find(c => c.id === mc.contribution_id);
             const bill = bills.find(b => b.id === contrib?.bill_id);

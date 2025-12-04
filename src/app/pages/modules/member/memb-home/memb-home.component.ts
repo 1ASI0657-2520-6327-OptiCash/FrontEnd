@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { switchMap, forkJoin, of, map } from 'rxjs';
+import { switchMap, forkJoin, of } from 'rxjs';
 import { environment } from '../../../../core/environments/environment';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { AvatarModule } from 'primeng/avatar';
 import { TagModule } from 'primeng/tag';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+
 interface User {
   id: number;
   username: string;
@@ -14,6 +15,7 @@ interface User {
   income: number;
   roles: string[];
 }
+
 interface Household {
   id: number;
   name: string;
@@ -21,11 +23,13 @@ interface Household {
   currency: string;
   representanteId: number;
 }
+
 interface HouseholdMember {
   id: number;
   userId: number;
   householdId: number;
 }
+
 interface MemberContribution {
   id: number;
   contributionId: number;
@@ -35,22 +39,21 @@ interface MemberContribution {
   pagadoEn: string | null;
 }
 
-
 @Component({
   selector: 'app-memb-home',
-  // ✅ --- ESTA ES LA PARTE CLAVE ---
   standalone: true,
   imports: [
-    CommonModule, // Necesario para *ngIf, *ngFor, y los pipes currency/date
+    CommonModule,
     TranslateModule,
     AvatarModule,
     TagModule,
-    ProgressSpinnerModule
+    ProgressSpinnerModule,
   ],
   templateUrl: './memb-home.component.html',
   styleUrls: ['./memb-home.component.css']
 })
 export class MembHomeComponent implements OnInit {
+
   currentUser!: User;
   household: Household | null = null;
   members: User[] = [];
@@ -65,12 +68,13 @@ export class MembHomeComponent implements OnInit {
 
   ngOnInit(): void {
     const userString = localStorage.getItem('currentUser');
+
     if (userString) {
       this.currentUser = JSON.parse(userString);
       this.loadDashboardData();
     } else {
-      this.loading = false;
       console.error("No se encontró usuario en la sesión.");
+      this.loading = false;
     }
   }
 
@@ -86,6 +90,7 @@ export class MembHomeComponent implements OnInit {
     const headers = this.getAuthHeaders();
 
     this.http.get<HouseholdMember[]>(`${this.API_URL}/household-members`, { headers }).pipe(
+
       switchMap(allMemberships => {
         const myMembership = allMemberships.find(m => m.userId === this.currentUser.id);
 
@@ -99,11 +104,15 @@ export class MembHomeComponent implements OnInit {
         return forkJoin({
           household: this.http.get<Household>(`${this.API_URL}/households/${householdId}`, { headers }),
           allUsers: this.http.get<User[]>(`${this.API_URL}/users`, { headers }),
-          allMemberContributions: this.http.get<MemberContribution[]>(`${this.API_URL}/member-contributions`, { headers }),
+          allMemberContributions: this.http.get<MemberContribution[]>(
+            `${this.API_URL}/member-contributions?member_id=${this.currentUser.id}`,
+            { headers }
+          ),
           allMemberships: of(allMemberships)
         });
       })
-    ).subscribe({
+    )
+    .subscribe({
       next: (result) => {
         if (result) {
           const { household, allUsers, allMemberContributions, allMemberships } = result;
@@ -116,7 +125,7 @@ export class MembHomeComponent implements OnInit {
 
           this.members = allUsers.filter(u => memberIdsOfMyHousehold.includes(u.id));
 
-          this.contributions = allMemberContributions.filter(c => c.memberId === this.currentUser.id);
+          this.contributions = allMemberContributions;
 
           this.totalPendiente = this.contributions
             .filter(c => c.status === 'PENDIENTE')
@@ -126,6 +135,7 @@ export class MembHomeComponent implements OnInit {
             .filter(c => c.status === 'PAGADO')
             .reduce((sum, c) => sum + (Number(c.monto) || 0), 0);
         }
+
         this.loading = false;
       },
       error: (err) => {

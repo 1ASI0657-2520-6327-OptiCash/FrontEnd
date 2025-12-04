@@ -20,16 +20,16 @@ import {  CreateContributionResource } from '../../interfaces/member-contributio
   styleUrl: './contributions.component.css'
 })
 export class ContributionsComponent implements OnInit {
-    households: any[] = [];  // <<--- AGREGAR ESTA LÍNEA
+    households: any[] = []; 
   householdId = 0;
   contributions: any[] = [];
   bills: any[] = [];
   members: any[] = [];
-  miembros: any[] = []; // Para el multiSelect
+  miembros: any[] = []; 
   currentUser!: User;
   loading = true;
   showForm = false;
-  mostrarDialogo = false; // Para el dialog
+  mostrarDialogo = false; 
   contributionForm!: FormGroup;
 
   // Opciones para el dropdown de estrategias
@@ -104,8 +104,6 @@ private loadData() {
   cerrarDialogo() {
     this.mostrarDialogo = false;
   }
-
-  // ✅ MÉTODO CORREGIDO: guardarContribution()
 guardarContribution() {
   if (this.contributionForm.invalid) return;
 
@@ -118,38 +116,63 @@ guardarContribution() {
   };
 
   this.contributionsService.createContribution(payload).subscribe({
-    next: (res) => {
-      console.log('Contribución creada:', res);
+    next: (createdContribution) => {
 
-      // 🔹 Recargar las contribuciones del household actual
-      this.contributionsService.getContributionsByHouseholdId(payload.householdId)
-        .subscribe(contribs => {
-          this.contributions = contribs; // actualizar array que se usa en el *ngFor
-          console.log('Contribuciones actualizadas:', this.contributions);
+      const householdId = payload.householdId;
+
+      this.householdMemberService.getByHouseholdId(householdId)
+        .subscribe((members: any[]) => {
+
+          const bill = this.bills.find(b => b.id === payload.billId);
+          if (!bill) return;
+
+          const montoTotal = bill.monto;
+
+          const memberContributions = this.calculateDivisionForSelected(
+            montoTotal,
+            payload.strategy,
+            createdContribution.id,
+            members
+          );
+
+          memberContributions.forEach(mc => {
+            this.memberContributionService.create(mc).subscribe();
+          });
+
+          this.contributionsService.getContributionsByHouseholdId(householdId)
+            .subscribe(c => {
+              this.contributions = c;
+            });
+
+          this.mostrarDialogo = false;
         });
-
-      this.mostrarDialogo = false;
     },
-    error: (err) => {
+
+    error: (err: any) => {
       console.error('Error creando contribución:', err);
       alert('Error al crear la contribución');
     }
   });
 }
 
-  // ✅ Método para calcular el monto faltante del representante
+
+private afterCreateRefresh(householdId: number) {
+  this.contributionsService.getContributionsByHouseholdId(householdId)
+    .subscribe(contribs => {
+      this.contributions = contribs;
+      console.log('Contribuciones actualizadas:', this.contributions);
+    });
+}
+
   private calculateMontoFaltante(contribution: any, details: any[], representative: User): number {
     const bill = this.bills.find(b => b.id === contribution.billId);
     const montoTotal = bill?.monto || 0;
 
-    // Calcular el monto ya asignado a otros miembros
     const montoAsignado = details.reduce((sum, detail) => sum + (detail.monto || 0), 0);
 
-    // El representante paga lo que falta
     return montoTotal - montoAsignado;
   }
 
-  // ✅ Método para calcular la división entre miembros seleccionados
   private calculateDivisionForSelected(
     montoTotal: number,
     strategy: string,
@@ -172,8 +195,7 @@ guardarContribution() {
         });
       });
     } else if (strategy === 'INCOME_BASED') {
-      // División basada en ingresos
-      // Obtener los ingresos de cada miembro
+    
       const totalIngresos = selectedMembers.reduce((sum, member) => {
         return sum + (member.user?.ingresos || 0);
       }, 0);
@@ -193,7 +215,6 @@ guardarContribution() {
           });
         });
       } else {
-        // Si no hay ingresos registrados, fallback a división igualitaria
         console.warn('No hay ingresos registrados, usando división igualitaria');
         return this.calculateDivisionForSelected(montoTotal, 'EQUAL', contributionId, selectedMembers);
       }
