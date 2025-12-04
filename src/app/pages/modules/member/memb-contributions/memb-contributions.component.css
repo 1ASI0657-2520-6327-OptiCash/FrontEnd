@@ -18,7 +18,7 @@
 }
 
 .card {
-  background-color: var(--background-card);
+  background-color: var(--background-main);
   border-radius: 16px;
   padding: 2rem;
   border: 1px solid var(--border-color);
@@ -37,6 +37,16 @@
   color: var(--text-primary);
   margin: 0;
 }
+.contributions-member-container td {
+  background-color: #000 !important;
+  color: white !important;
+}
+
+.contributions-member-container th {
+  background-color: #222 !important;
+  color: white !important;
+}
+
 
 .card-subtitle {
   font-size: 1rem;
