@@ -13,6 +13,9 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { RepresentativeModule } from './pages/modules/representative/representative.module';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -27,6 +30,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     AppRoutingModule,
     PrimeNgModule,
     FormsModule,
+     ToastModule,
     TranslateModule.forRoot({
       defaultLanguage: 'es',
       loader: {
@@ -37,7 +41,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     }),
     RepresentativeModule
   ],
-providers: [
+providers: [ 
+  [MessageService],
   provideAnimationsAsync(),
   providePrimeNG({ theme: { preset: Aura } }),
   provideHttpClient(),

@@ -4,12 +4,15 @@ import { BillResponse, CreateBillRequest } from '../../interfaces/bills';
 import { User } from '../../../../core/interfaces/auth';
 import { BillsService } from '../../services/bills.service';
 import { HouseholdService } from '../../services/household.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-bills',
   standalone: false,
   templateUrl: './bills.component.html',
-  styleUrls: ['./bills.component.css']
+  styleUrls: ['./bills.component.css'],
+    providers: [MessageService]
+
 })
 export class BillsComponent implements OnInit {
 
@@ -24,11 +27,13 @@ export class BillsComponent implements OnInit {
   errorMessage = '';
   editingBillId: number | null = null;
 
-  constructor(
-    private billsService: BillsService,
-    private householdService: HouseholdService,
-    private fb: FormBuilder
-  ) {}
+constructor(
+  private billsService: BillsService,
+  private householdService: HouseholdService,
+  private fb: FormBuilder,
+  private messageService: MessageService
+) {}
+
 
   ngOnInit() {
     try {
@@ -129,10 +134,13 @@ private loadUserHouseholds() {
 private createBill() {
   const householdId = this.billForm.value.householdId;
   if (!householdId) {
-    alert('Debes seleccionar un hogar antes de crear la factura');
+      this.messageService.add({
+      severity: 'warn',
+      summary: 'Hogar no seleccionado',
+      detail: 'Debes seleccionar un hogar antes de crear la factura.'
+    });
     return;
   }
-
   const createBillRequest: CreateBillRequest = {
     householdId,
     description: this.billForm.value.descripcion, // <-- aquí cambias al campo correcto
@@ -148,10 +156,19 @@ private createBill() {
       this.bills.push(savedBill);
       this.formVisible = false;
       this.billForm.reset({ householdId });
+         this.messageService.add({
+        severity: 'success',
+        summary: 'Factura creada',
+        detail: `Factura "${savedBill.description}" creada correctamente.`
+      });
     },
-    error: (err) => {
+     error: (err) => {
       console.error('Error creando bill:', err);
-      alert('Error al crear la factura');
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'No se pudo crear la factura.'
+      });
     }
   });
 }
@@ -162,7 +179,7 @@ private createBill() {
   if (!this.editingBillId) return;
 
   const updateRequest = {
-    description: this.billForm.value.descripcion,  // aquí debes usar description
+    description: this.billForm.value.descripcion,  
     monto: this.billForm.value.monto,
     fecha: this.billForm.value.fecha
   };
@@ -173,10 +190,20 @@ private createBill() {
       if (idx !== -1) this.bills[idx] = updatedBill;
       this.formVisible = false;
       this.editingBillId = null;
+
+       this.messageService.add({
+        severity: 'success',
+        summary: 'Factura actualizada',
+        detail: `Factura "${updatedBill.description}" actualizada correctamente.`
+      });
     },
     error: (err) => {
-      console.error('Error actualizando bill:', err);
-      alert('Error al actualizar la factura');
+       console.error('Error actualizando bill:', err);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'No se pudo actualizar la factura.'
+      });
     }
   });
 }
@@ -195,15 +222,29 @@ private createBill() {
   });
 }
 
-  deleteBill(billId: number) {
-    if (!this.isRepresentante) return;
+ deleteBill(billId: number) {
+  if (!this.isRepresentante) return;
 
-    if (!confirm('¿Seguro que quieres eliminar esta factura?')) return;
+  if (!confirm('¿Seguro que quieres eliminar esta factura?')) return;
 
-    this.billsService.deleteBill(billId).subscribe({
-      next: () => this.bills = this.bills.filter(b => b.id !== billId),
-      error: (err) => alert('Error al eliminar factura')
-    });
+  this.billsService.deleteBill(billId).subscribe({
+    next: () => {
+      this.bills = this.bills.filter(b => b.id !== billId);
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Factura eliminada',
+        detail: 'La factura ha sido eliminada correctamente.'
+      });
+    },
+    error: (err) => {
+      console.error(err);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'No se pudo eliminar la factura.'
+      });
+    }
+  });
   }
 
   cancelForm() {

@@ -38,6 +38,12 @@
 <h2>Contribuciones del hogar</h2>
 <ul>
   <li *ngFor="let c of contributions">
-    {{ c.description }} - {{ c.strategy }} - {{ c.fechaLimite }} - Factura: {{ c.billId }}
+    <span class="description">{{ c.description }}</span>
+    <span class="strategy">{{ c.strategy }}</span>
+    <span class="fecha">{{ c.fechaLimite }}</span>
+    <span class="factura">Factura: {{ c.billId }}</span>
   </li>
 </ul>
+
+
+<p-toast></p-toast>

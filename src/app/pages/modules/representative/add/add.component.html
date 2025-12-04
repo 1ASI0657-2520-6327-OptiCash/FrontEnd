@@ -1,25 +1,48 @@
+<p-toast></p-toast>
+
 <form (ngSubmit)="crearHogar()">
-  <label>Nombre del hogar:</label>
-  <input [(ngModel)]="household.name" name="name" required />
+  <div class="form-field">
+    <label for="name"><i class="pi pi-home"></i> Nombre del hogar:</label>
+    <input id="name" [(ngModel)]="household.name" name="name" required />
+  </div>
 
-  <label>Descripción:</label>
-  <input [(ngModel)]="household.description" name="description" required />
+  <div class="form-field">
+    <label for="description"><i class="pi pi-file-edit"></i> Descripción:</label>
+    <input id="description" [(ngModel)]="household.description" name="description" required />
+  </div>
 
-  <label>Moneda:</label>
-  <input [(ngModel)]="household.currency" name="currency" required />
+  <div class="form-field">
+    <label for="currency"><i class="pi pi-dollar"></i> Moneda:</label>
+    <input id="currency" [(ngModel)]="household.currency" name="currency" required />
+  </div>
 
-  <button type="submit">Crear hogar</button>
+  <button type="submit">
+    <i class="pi pi-plus-circle"></i> Crear hogar
+  </button>
 </form>
 
-<div *ngIf="loading">Cargando hogares...</div>
-<div *ngIf="errorMessage">{{ errorMessage }}</div>
+<div *ngIf="loading" class="info-message loading-message">
+  <i class="pi pi-spin pi-spinner"></i> Cargando hogares...
+</div>
+<div *ngIf="errorMessage" class="info-message error-message">
+  <i class="pi pi-times-circle"></i> {{ errorMessage }}
+</div>
 
-<hr />
-<h2>Hogares creados</h2>
+<hr class="divider" />
+<h2><i class="pi pi-list"></i> Hogares creados</h2>
+
+<div *ngIf="!hogares || hogares.length === 0" class="empty-state">
+  <i class="pi pi-info-circle"></i> Aún no has creado ningún hogar. ¡Crea el primero!
+</div>
 
 <div *ngFor="let h of hogares" class="hogar-card">
   <div class="hogar-info">
-    <p class="hogar-name">{{ h.name }}</p>
-    <p class="hogar-representante">Representante: {{ h.representanteId }}</p>
+    <p class="hogar-name"><i class="pi pi-box"></i> {{ h.name }}</p>
+    <p class="hogar-representante"><i class="pi pi-user"></i> Representante: {{ h.representanteId }}</p>
   </div>
+  
+  <button class="action-button">
+    Administrar
+    <i class="pi pi-angle-right"></i>
+  </button>
 </div>

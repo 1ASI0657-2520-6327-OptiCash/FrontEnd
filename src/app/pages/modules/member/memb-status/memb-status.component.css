@@ -23,7 +23,7 @@
 }
 
 :host ::ng-deep .p-card {
-  background-color: var(--background-card);
+  background-color: var(--background-main);
   border: 1px solid var(--border-color);
   border-radius: 16px;
   box-shadow: 0 8px 20px var(--shadow-color);
@@ -104,4 +104,21 @@
 :host ::ng-deep .p-paginator .p-dropdown {
   background: var(--background-main);
   border-color: var(--border-color);
+}
+
+
+p-table td {
+  background-color: #0e0d0d;
+  color: #fff;
+  border-color: #333;
+}
+
+.badge.bg-success {
+  background-color: #28a745 !important; /* verde */
+  color: #fff;
+}
+
+.badge.bg-warning {
+  background-color: #ffc107 !important; /* amarillo */
+  color: #000;
 }

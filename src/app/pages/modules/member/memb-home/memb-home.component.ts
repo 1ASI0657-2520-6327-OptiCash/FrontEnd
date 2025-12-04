@@ -7,6 +7,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AvatarModule } from 'primeng/avatar';
 import { TagModule } from 'primeng/tag';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 interface User {
   id: number;
@@ -48,6 +50,8 @@ interface MemberContribution {
     AvatarModule,
     TagModule,
     ProgressSpinnerModule,
+      ToastModule 
+
   ],
   templateUrl: './memb-home.component.html',
   styleUrls: ['./memb-home.component.css']
@@ -64,7 +68,7 @@ export class MembHomeComponent implements OnInit {
 
   private readonly API_URL = `${environment.urlBackend}`;
 
-  constructor(private http: HttpClient) {}
+constructor(private http: HttpClient, private messageService: MessageService) {}
 
   ngOnInit(): void {
     const userString = localStorage.getItem('currentUser');
@@ -112,36 +116,50 @@ export class MembHomeComponent implements OnInit {
         });
       })
     )
-    .subscribe({
-      next: (result) => {
-        if (result) {
-          const { household, allUsers, allMemberContributions, allMemberships } = result;
+   .subscribe({
+  next: (result) => {
+    if (result) {
+      const { household, allUsers, allMemberContributions, allMemberships } = result;
 
-          this.household = household;
+      this.household = household;
 
-          const memberIdsOfMyHousehold = allMemberships
-            .filter(m => m.householdId === this.household!.id)
-            .map(m => m.userId);
+      const memberIdsOfMyHousehold = allMemberships
+        .filter(m => m.householdId === this.household!.id)
+        .map(m => m.userId);
 
-          this.members = allUsers.filter(u => memberIdsOfMyHousehold.includes(u.id));
+      this.members = allUsers.filter(u => memberIdsOfMyHousehold.includes(u.id));
 
-          this.contributions = allMemberContributions;
+      this.contributions = allMemberContributions;
 
-          this.totalPendiente = this.contributions
-            .filter(c => c.status === 'PENDIENTE')
-            .reduce((sum, c) => sum + (Number(c.monto) || 0), 0);
+      this.totalPendiente = this.contributions
+        .filter(c => c.status === 'PENDIENTE')
+        .reduce((sum, c) => sum + (Number(c.monto) || 0), 0);
 
-          this.totalPagado = this.contributions
-            .filter(c => c.status === 'PAGADO')
-            .reduce((sum, c) => sum + (Number(c.monto) || 0), 0);
-        }
+      this.totalPagado = this.contributions
+        .filter(c => c.status === 'PAGADO')
+        .reduce((sum, c) => sum + (Number(c.monto) || 0), 0);
 
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error("Error al cargar el dashboard", err);
-        this.loading = false;
-      }
-    });
+      this.showSuccess('Dashboard cargado', 'Datos del hogar y contribuciones cargados correctamente.');
+    }
+
+    this.loading = false;
+  },
+  error: (err) => {
+    console.error("Error al cargar el dashboard", err);
+    this.showError('Error al cargar dashboard', 'Vuelve a intentar más tarde.');
+    this.loading = false;
   }
+});
+
+  }
+  private showSuccess(summary: string, detail: string) {
+  this.messageService.add({ severity: 'success', summary, detail });
+}
+
+private showError(summary: string, detail: string) {
+  this.messageService.add({ severity: 'error', summary, detail });
+}
+
+
+  
 }

@@ -227,22 +227,27 @@
     "CONFIRM_PASSWORD_LABEL": "Confirm New Password",
     "BUTTON": "Save & Continue"
   },
-  "DASHBOARD": {
-    "HOME_CARD": {
-      "TITLE": "My Home",
-      "NAME": "Name:",
-      "CURRENCY": "Currency:",
-      "DESCRIPTION": "Description:"
-    },
-    "FINANCE_CARD": {
-      "TITLE": "My Financial Situation",
-      "TOTAL_PENDING": "Total pending:",
-      "TOTAL_PAID": "Total paid:",
-      "ACTIVE_CONTRIBUTIONS": "Active contributions:"
-    },
-    "MEMBERS_CARD": {
-      "TITLE": "Household Members"
-    }
+"DASHBOARD": {
+  "HOME_CARD": {
+    "TITLE": "My Home",
+    "NAME": "Name:",
+    "CURRENCY": "Currency:",
+    "DESCRIPTION": "Description:"
+  },
+  "FINANCE_CARD": {
+    "TITLE": "My Financial Situation",
+    "TOTAL_PENDING": "Total pending:",
+    "TOTAL_PAID": "Total paid:",
+    "ACTIVE_CONTRIBUTIONS": "Active contributions:"
+  },
+  "MEMBERS_CARD": {
+    "TITLE": "Household Members"
+  },
+  "MEMBER": {
+    "WELCOME_TITLE": "Welcome",
+    "WELCOME_SUBTITLE": "Here's a quick overview of your household finances"
+  }
+
   },
   "PROFILE": {
     "TITLE": "Manage Profile",
@@ -330,7 +335,12 @@
       "BILL": "Select a bill.",
       "DEADLINE": "Deadline is required.",
       "STRATEGY": "Select a strategy."
-    }
+    },
+    "MEMBER_CONTRIBUTIONS": {
+  "TITLE": "Member Contributions",
+  "SUBTITLE": "Here you can view and manage your household contributions"
+}
+
   },
   "SUMMARY": {
     "TITLE": "Household Summary",
@@ -341,6 +351,7 @@
   "HOUSEHOLD": {
     "MEMBERS": {
       "TITLE": "Household Members",
+      "SUBTITLE": "Overview of your household members",
       "NAME": "Name",
       "EMAIL": "Email",
       "INCOME": "Monthly Income"

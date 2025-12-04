@@ -12,12 +12,15 @@ import { HouseholdMemberService } from '../../services/household-member.service'
 import { BillsService } from '../../services/bills.service';
 import { MemberContributionService } from '../../services/member-contribution.service';
 import {  CreateContributionResource } from '../../interfaces/member-contribution';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-contributions',
   standalone: false,
   templateUrl: './contributions.component.html',
-  styleUrl: './contributions.component.css'
+  styleUrl: './contributions.component.css',
+    providers: [MessageService]
+
 })
 export class ContributionsComponent implements OnInit {
     households: any[] = [];  // <<--- AGREGAR ESTA LÍNEA
@@ -46,7 +49,8 @@ export class ContributionsComponent implements OnInit {
     private householdMemberService: HouseholdMemberService,
     private authService: AuthService,
     private billService: BillsService,
-    private memberContributionService: MemberContributionService
+    private memberContributionService: MemberContributionService,
+      private messageService: MessageService  
   ) { }
 
 ngOnInit(): void {
@@ -67,28 +71,28 @@ ngOnInit(): void {
 private loadData() {
   const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
-  // Obtener hogares
   this.householdService.getHouseholdsByUserId(user.id).subscribe(households => {
     this.households = households;
     if (households.length > 0) {
       this.contributionForm.patchValue({ householdId: households[0].id });
 
-      // 🔹 Cargar contribuciones de ese hogar
       this.contributionsService.getContributionsByHouseholdId(households[0].id)
         .subscribe(contribs => {
           this.contributions = contribs;
-          console.log('Contribuciones cargadas al iniciar:', this.contributions);
+ this.messageService.add({ 
+            severity: 'success', 
+            summary: 'Éxito', 
+            detail: 'Contribuciones cargadas correctamente' 
+          });
         });
     }
   });
 
-  // Obtener facturas
   this.billService.getAllBills().subscribe(bills => {
     this.bills = bills;
   });
 }
 
-  // Método para abrir el diálogo (usado en el template)
   abrirDialogo() {
     this.contributionForm.reset({
       billId: null,
@@ -105,7 +109,6 @@ private loadData() {
     this.mostrarDialogo = false;
   }
 
-  // ✅ MÉTODO CORREGIDO: guardarContribution()
 guardarContribution() {
   if (this.contributionForm.invalid) return;
 
@@ -121,7 +124,6 @@ guardarContribution() {
     next: (res) => {
       console.log('Contribución creada:', res);
 
-      // 🔹 Recargar las contribuciones del household actual
       this.contributionsService.getContributionsByHouseholdId(payload.householdId)
         .subscribe(contribs => {
           this.contributions = contribs; // actualizar array que se usa en el *ngFor
@@ -129,15 +131,23 @@ guardarContribution() {
         });
 
       this.mostrarDialogo = false;
+       this.messageService.add({
+        severity: 'success',
+        summary: 'Contribución creada',
+        detail: `La contribución "${payload.description}" fue creada correctamente.`
+      });
     },
     error: (err) => {
       console.error('Error creando contribución:', err);
-      alert('Error al crear la contribución');
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'No se pudo crear la contribución.'
+      });
     }
   });
 }
 
-  // ✅ Método para calcular el monto faltante del representante
   private calculateMontoFaltante(contribution: any, details: any[], representative: User): number {
     const bill = this.bills.find(b => b.id === contribution.billId);
     const montoTotal = bill?.monto || 0;
@@ -149,7 +159,7 @@ guardarContribution() {
     return montoTotal - montoAsignado;
   }
 
-  // ✅ Método para calcular la división entre miembros seleccionados
+  // método para calcular la división entre miembros seleccionados
   private calculateDivisionForSelected(
     montoTotal: number,
     strategy: string,

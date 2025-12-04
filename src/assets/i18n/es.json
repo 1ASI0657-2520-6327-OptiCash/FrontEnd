@@ -216,21 +216,26 @@
     "BUTTON": "Guardar y Continuar"
   },
   "DASHBOARD": {
-    "HOME_CARD": {
-      "TITLE": "Mi hogar",
-      "NAME": "Nombre:",
-      "CURRENCY": "Moneda:",
-      "DESCRIPTION": "Descripción:"
-    },
-    "FINANCE_CARD": {
-      "TITLE": "Mi situación financiera",
-      "TOTAL_PENDING": "Total pendiente:",
-      "TOTAL_PAID": "Total pagado:",
-      "ACTIVE_CONTRIBUTIONS": "Contribuciones activas:"
-    },
-    "MEMBERS_CARD": {
-      "TITLE": "Miembros del hogar"
-    }
+  "HOME_CARD": {
+    "TITLE": "Mi Hogar",
+    "NAME": "Nombre:",
+    "CURRENCY": "Moneda:",
+    "DESCRIPTION": "Descripción:"
+  },
+  "FINANCE_CARD": {
+    "TITLE": "Mi Situación Financiera",
+    "TOTAL_PENDING": "Total pendiente:",
+    "TOTAL_PAID": "Total pagado:",
+    "ACTIVE_CONTRIBUTIONS": "Contribuciones activas:"
+  },
+  "MEMBERS_CARD": {
+    "TITLE": "Miembros del Hogar"
+  },
+  "MEMBER": {
+    "WELCOME_TITLE": "Bienvenido al Panel de Control",
+    "WELCOME_SUBTITLE": "Aquí tienes un resumen rápido de las finanzas de tu hogar"
+  }
+
   },
   "CONTRIBUTIONS_STATUS": {
     "TITLE": "Estado de mis contribuciones",
@@ -294,17 +299,29 @@
       "BILL": "Seleccione una cuenta.",
       "DEADLINE": "La fecha límite es obligatoria.",
       "STRATEGY": "Seleccione una estrategia."
-    }
+    },
+    "MEMBER_CONTRIBUTIONS": {
+  "TITLE": "Contribuciones del Miembro",
+  "SUBTITLE": "Aquí puedes ver y gestionar tus aportes al hogar"
+}
+
   },
   "SUMMARY": {
-    "TITLE": "Resumen del hogar",
-    "MEMBERS": "Miembros",
-    "BILLS": "Cuentas",
-    "CONTRIBUTIONS": "Contribuciones"
-  },
+  "TITLE": "Resumen del hogar",
+  "SUBTITLE": "Resumen rápido de tu hogar",
+  "MEMBERS_ACTIVE": "Miembros activos",
+  "BILLS_MONTH": "Cuentas del mes",
+  "CONTRIBUTIONS_MADE": "Contribuciones realizadas",
+  "MEMBERS": "Miembros",
+  "BILLS": "Cuentas",
+  "CONTRIBUTIONS": "Contribuciones"
+},
+
   "HOUSEHOLD": {
     "MEMBERS": {
       "TITLE": "Miembros del hogar",
+     "SUBTITLE": "Resumen de los miembros de su hogar",
+
       "NAME": "Nombre",
       "EMAIL": "Email",
       "INCOME": "Ingreso mensual"

@@ -1,15 +1,19 @@
 :host {
-  --brand-primary: #1565c0;
-  --brand-secondary: #ff6f00;
+  --brand-primary: #2b4b70;
+  --brand-secondary: #5495cb;
   --danger-color: #d32f2f;
   --background-main: #1a1a1a;
   --background-card: #2d2d2d;
   --background-hover: #3a3a3a;
-  --border-color: #404040;
+  --border-color: #5b5858;
   --shadow-color: rgba(0, 0, 0, 0.3);
+  --shadow-hover: rgba(0, 0, 0, 0.6);
   --text-primary: #f8f9fa;
   --text-secondary: #adb5bd;
+  --transition-fast: 0.2s ease;
+  --transition-medium: 0.3s ease;
 }
+
 /* Fondo general y tipografía */
 body {
   background-color: var(--background-main);
@@ -30,7 +34,14 @@ form {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem 2rem;
-  align-items: center;
+  align-items: start;
+  transition: all var(--transition-medium);
+}
+
+@media (max-width: 700px) {
+  form {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Campos del formulario */
@@ -47,49 +58,55 @@ form label {
 
 form input,
 form select {
-  padding: 0.6rem 0.8rem;
-  border-radius: 8px;
-  border: 1px solid var(--brand-primary);
+  padding: 0.65rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
   background-color: var(--background-hover);
   color: var(--text-primary);
   font-size: 1rem;
   width: 100%;
   box-sizing: border-box;
-  transition: all 0.3s ease;
+  transition: all var(--transition-fast);
+}
+
+form input:hover,
+form select:hover {
+  border-color: var(--brand-primary);
 }
 
 form input:focus,
 form select:focus {
   outline: none;
   border-color: var(--brand-secondary);
-  box-shadow: 0 0 8px var(--brand-secondary);
+  box-shadow: 0 0 10px var(--brand-secondary);
 }
 
 /* Botón centrado */
 form button {
   grid-column: 1 / -1;
-  padding: 0.9rem 1.2rem;
+  padding: 1rem 1.3rem;
   font-weight: 600;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
   color: var(--text-primary);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-medium);
   justify-self: center;
   width: 250px;
 }
 
 form button:hover:not(:disabled) {
   background: linear-gradient(135deg, var(--brand-secondary), var(--brand-primary));
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(21, 101, 192, 0.6);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 20px var(--shadow-hover);
 }
 
 form button:disabled {
   background: var(--border-color);
   cursor: not-allowed;
+  opacity: 0.7;
 }
 
 /* Título de contribuciones */
@@ -115,22 +132,21 @@ ul {
 ul li {
   background: var(--background-card);
   padding: 1rem 1.5rem;
-  border-radius: 12px;
+  border-radius: 14px;
   border-left: 5px solid var(--brand-primary);
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr; /* descripción, estrategia, fecha, factura */
-  gap: 0.5rem;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 0.75rem;
   align-items: center;
   font-size: 1rem;
-  transition: all 0.3s ease;
+  transition: all var(--transition-medium);
 }
 
 ul li:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px var(--shadow-color);
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 8px 25px var(--shadow-hover);
 }
 
-/* Cada elemento dentro de la contribución */
 ul li span {
   display: block;
   overflow-wrap: anywhere;
@@ -139,14 +155,92 @@ ul li span {
 
 ul li span.strategy {
   color: var(--brand-secondary);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 ul li span.fecha {
   color: var(--text-secondary);
+  font-style: italic;
 }
 
 ul li span.factura {
   color: var(--brand-primary);
+  font-weight: 700;
+}
+
+@media (max-width: 700px) {
+  ul li {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  ul li span {
+    font-size: 0.95rem;
+  }
+}
+ul {
+  list-style: none;
+  padding: 0;
+  max-width: 900px;
+  margin: 1.5rem auto 3rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+ul li {
+  background: var(--background-card);
+  padding: 1rem 1.5rem;
+  border-radius: 14px;
+  border-left: 5px solid var(--brand-primary);
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr; /* descripción, estrategia, fecha, factura */
+  gap: 0.75rem;
+  align-items: center;
+  font-size: 1rem;
+  transition: all var(--transition-medium);
+}
+
+ul li:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 8px 25px var(--shadow-hover);
+}
+
+ul li span {
+  display: block;
+  overflow-wrap: anywhere;
+  color: var(--text-primary);
+}
+
+ul li span.description {
   font-weight: 600;
+}
+
+ul li span.strategy {
+  color: var(--brand-secondary);
+  font-weight: 700;
+  text-align: center;
+}
+
+ul li span.fecha {
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+ul li span.factura {
+  color: var(--brand-primary);
+  font-weight: 700;
+  text-align: right;
+}
+
+/* Responsividad */
+@media (max-width: 700px) {
+  ul li {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  ul li span {
+    text-align: left;
+    font-size: 0.95rem;
+  }
 }

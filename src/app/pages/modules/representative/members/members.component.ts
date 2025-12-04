@@ -151,7 +151,6 @@ private readonly API_URL = `${environment.urlBackend}`;
     });
   }
 
-  // Abrir diálogo para añadir miembro
   openAddMemberDialog() {
     this.showAddMemberForm = true;
     if (this.hogaresDelUsuario.length === 1) {

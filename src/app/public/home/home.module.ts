@@ -15,7 +15,6 @@ import { ServiceSectionComponent } from './service-section/service-section.compo
 import { TranslateModule } from '@ngx-translate/core';
 import { CoreModule } from '../../core/core.module';
 import { AppRoutingModule } from '../../app-routing.module';
-
 import { AgregarHogarComponent } from '../../pages/modules/representative/add/add.component';
 @NgModule({
   declarations: [HomeComponent,
@@ -24,7 +23,6 @@ import { AgregarHogarComponent } from '../../pages/modules/representative/add/ad
     HowdoesitworkSectionComponent,
     PriceSectionComponent,
     ReviewSectionComponent,
-    AgregarHogarComponent,
     ServiceSectionComponent
   ],
   imports: [
@@ -33,7 +31,9 @@ import { AgregarHogarComponent } from '../../pages/modules/representative/add/ad
     TranslateModule,
     FormsModule,
     ContactusSectionComponent,
-    HomeRoutingModule
+    HomeRoutingModule,
+  AgregarHogarComponent // IMPORTAR en lugar de declarar
+
   ]
 })
 export class HomeModule { }
