@@ -1,80 +1,130 @@
 <div class="dashboard-container" *ngIf="!loading && household; else loadingOrEmptyTemplate">
+
+  <!-- MAIN CARD -->
   <div class="main-card">
     <div class="card-header">
-      <h1 class="card-title">{{ 'DASHBOARD.MEMBER.WELCOME_TITLE' | translate }}, {{ currentUser.username }}!</h1>
-      <p class="card-subtitle">{{ 'DASHBOARD.MEMBER.WELCOME_SUBTITLE' | translate }}</p>
+      <h1 class="card-title">
+        {{ 'DASHBOARD.MEMBER.WELCOME_TITLE' | translate }}, {{ currentUser.username }}!
+      </h1>
+      <p class="card-subtitle">
+        {{ 'DASHBOARD.MEMBER.WELCOME_SUBTITLE' | translate }}
+      </p>
     </div>
+
     <div class="household-info">
       <h2 class="household-name">
         <i class="pi pi-home"></i>
         <span>{{ household.name }}</span>
       </h2>
-      <p class="household-description">{{ household.description }}</p>
+      <p class="household-description">
+        {{ household.description }}
+      </p>
     </div>
   </div>
 
+  <!-- STATS GRID -->
   <div class="stats-grid">
+
     <div class="stat-card">
       <div class="stat-icon-wrapper expenses">
         <i class="pi pi-wallet stat-icon"></i>
       </div>
       <div class="stat-content">
-        <span class="stat-label">{{ 'DASHBOARD.FINANCE_CARD.TOTAL_PENDING' | translate }}</span>
-        <div class="stat-number">{{ totalPendiente | currency:household.currency }}</div>
+        <span class="stat-label">
+          {{ 'DASHBOARD.FINANCE_CARD.TOTAL_PENDING' | translate }}
+        </span>
+        <div class="stat-number">
+          {{ totalPendiente | currency : household.currency }}
+        </div>
       </div>
     </div>
+
     <div class="stat-card">
       <div class="stat-icon-wrapper contributions">
         <i class="pi pi-check-circle stat-icon"></i>
       </div>
       <div class="stat-content">
-        <span class="stat-label">{{ 'DASHBOARD.FINANCE_CARD.TOTAL_PAID' | translate }}</span>
-        <div class="stat-number">{{ totalPagado | currency:household.currency }}</div>
+        <span class="stat-label">
+          {{ 'DASHBOARD.FINANCE_CARD.TOTAL_PAID' | translate }}
+        </span>
+        <div class="stat-number">
+          {{ totalPagado | currency : household.currency }}
+        </div>
       </div>
     </div>
+
     <div class="stat-card">
       <div class="stat-icon-wrapper active-tasks">
         <i class="pi pi-list stat-icon"></i>
       </div>
       <div class="stat-content">
-        <span class="stat-label">{{ 'DASHBOARD.FINANCE_CARD.ACTIVE_CONTRIBUTIONS' | translate }}</span>
-        <div class="stat-number">{{ contributions.length }}</div>
+        <span class="stat-label">
+          {{ 'DASHBOARD.FINANCE_CARD.ACTIVE_CONTRIBUTIONS' | translate }}
+        </span>
+        <div class="stat-number">
+          {{ contributions.length }}
+        </div>
       </div>
     </div>
+
     <div class="stat-card">
       <div class="stat-icon-wrapper members">
         <i class="pi pi-users stat-icon"></i>
       </div>
       <div class="stat-content">
-        <span class="stat-label">{{ 'DASHBOARD.MEMBERS_CARD.TITLE' | translate }}</span>
-        <div class="stat-number">{{ members.length }}</div>
+        <span class="stat-label">
+          {{ 'DASHBOARD.MEMBERS_CARD.TITLE' | translate }}
+        </span>
+        <div class="stat-number">
+          {{ members.length }}
+        </div>
       </div>
     </div>
+
   </div>
 
+  <!-- MEMBERS LIST -->
   <div class="members-list-card">
-    <h3 class="list-header">{{ 'DASHBOARD.MEMBERS_CARD.TITLE' | translate }}</h3>
+    <h3 class="list-header">
+      {{ 'DASHBOARD.MEMBERS_CARD.TITLE' | translate }}
+    </h3>
+
     <ul class="members-list">
       <li *ngFor="let member of members">
+
         <div class="member-info">
-          <p-avatar [label]="member.username.charAt(0).toUpperCase()" shape="circle" size="large"></p-avatar>
+          <p-avatar
+            [label]="member.username.charAt(0).toUpperCase()"
+            shape="circle"
+            size="large">
+          </p-avatar>
+
           <div class="member-details">
             <span class="member-name">{{ member.username }}</span>
             <span class="member-email">{{ member.email }}</span>
           </div>
         </div>
-        <p-tag [value]="member.roles[0]" [severity]="member.roles.includes('ROLE_REPRESENTANTE') ? 'info' : 'secondary'"></p-tag>
+
+        <p-tag
+          [value]="member.roles[0]"
+          [severity]="member.roles.includes('ROLE_REPRESENTANTE') ? 'info' : 'secondary'">
+        </p-tag>
+
       </li>
     </ul>
   </div>
+
 </div>
 
 <ng-template #loadingOrEmptyTemplate>
   <div class="loading-container">
+
     <p-progressSpinner *ngIf="loading"></p-progressSpinner>
+
     <div *ngIf="!loading && !household">
       <h2>No perteneces a ningún hogar todavía.</h2>
       <p>Pídele al representante de un hogar que te invite.</p>
     </div>
+
   </div>
 </ng-template>
