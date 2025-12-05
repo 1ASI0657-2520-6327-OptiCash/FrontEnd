@@ -26,6 +26,7 @@ export class LoginComponent {
       username: this.username,
       password: this.password
     };
+    console.log("SignIn Payload", payload);
 
     this.authService.signIn(payload).subscribe({
       next: () => {
