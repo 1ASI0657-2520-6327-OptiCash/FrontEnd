@@ -1,9 +1,0 @@
-{
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "https://opticash.duckdns.org/api/v1/:path*"
-    }
-  ],
-  "routes": []
-}
