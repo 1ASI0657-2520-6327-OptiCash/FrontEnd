@@ -33,6 +33,7 @@ export class AuthService {
 
   // Login
   signIn(payload: SignInRequest): Observable<User> {
+    console.log("SignIn payload:", payload);
     return this.http.post<AuthResponse>(`${this.authUrl}/sign-in`, payload).pipe(
       tap(res => {
         // Guardar token y userId
