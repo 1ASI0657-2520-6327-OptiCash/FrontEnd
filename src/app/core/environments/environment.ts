@@ -1,4 +1,4 @@
 export const environment = {
-  production: false,
+  production: true,
   urlBackend: 'https://opticash.duckdns.org/api/v1'
 };
